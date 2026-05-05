@@ -1,0 +1,39 @@
+<div class="login-container">
+  <div class="glass-card">
+    <div class="logo">
+      <div class="brand">
+        <img src="spwf.png" alt="SparrowFi Logo" class="app-logo">
+        <h1>Sparrow<span>Fi</span></h1>
+      </div>
+      <p>Secure Offline Financial Tracker</p>
+    </div>
+
+    <div 
+      class="drop-zone" 
+      [class.dragging]="isDragging"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="fileInput.click()"
+    >
+      <input type="file" #fileInput accept=".spw" (change)="onFileSelected($event)" hidden>
+      <div class="drop-content">
+        <i class="icon">📄</i>
+        <p>Drag & Drop your <strong>.spw</strong> file here</p>
+        <span>or click to browse</span>
+      </div>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="divider">
+      <span>OR</span>
+    </div>
+
+    <button class="btn-primary" (click)="startNewUser()">
+      Start as New User
+    </button>
+  </div>
+</div>

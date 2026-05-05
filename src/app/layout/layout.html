@@ -1,0 +1,55 @@
+<div class="app-layout" [class.sidebar-collapsed]="isCollapsed()">
+  <aside class="sidebar glass-panel" [class.collapsed]="isCollapsed()">
+    <div class="sidebar-header">
+      <div class="brand">
+        <img src="spwf.png" alt="SparrowFi Logo" class="app-logo">
+        <h2 class="brand-name">Sparrow<span>Fi</span></h2>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()" [title]="isCollapsed() ? 'Expand menu' : 'Collapse menu'">
+        <span>{{ isCollapsed() ? '›' : '‹' }}</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Dashboard' : ''">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a routerLink="/transaction" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Transactions' : ''">
+        <span class="icon">💸</span>
+        <span class="label">Transactions</span>
+      </a>
+      <a routerLink="/bank" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Banks' : ''">
+        <span class="icon">🏦</span>
+        <span class="label">Banks</span>
+      </a>
+      <a routerLink="/credit-card" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Credit Cards' : ''">
+        <span class="icon">💳</span>
+        <span class="label">Credit Cards</span>
+      </a>
+      <a routerLink="/category" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Categories' : ''">
+        <span class="icon">🏷️</span>
+        <span class="label">Categories</span>
+      </a>
+      <a routerLink="/settings" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Settings' : ''">
+        <span class="icon">⚙️</span>
+        <span class="label">Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-secondary" (click)="exportData()" [class.pulse]="stateService.isDirty()" [title]="isCollapsed() ? 'Export .spw' : ''">
+        <span class="icon">💾</span>
+        <span class="label">Export .spw</span>
+      </button>
+      <button class="btn-outline" (click)="logout()" [title]="isCollapsed() ? 'Logout' : ''">
+        <span class="icon">🚪</span>
+        <span class="label">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

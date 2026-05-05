@@ -1,0 +1,51 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="welcome">
+      <h1>Dashboard</h1>
+      <p>Overview of your finances</p>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card glass-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <h3>Total Bank Capital</h3>
+        <p class="amount">{{ stateService.currencySymbol() }}{{ totalCapital() | number:'1.2-2' }}</p>
+      </div>
+    </div>
+    
+    <div class="stat-card glass-card">
+      <div class="stat-icon">🏦</div>
+      <div class="stat-info">
+        <h3>Connected Banks</h3>
+        <p class="amount">{{ bankCount() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card glass-card">
+      <div class="stat-icon">💳</div>
+      <div class="stat-info">
+        <h3>Debit/Credit Cards</h3>
+        <p class="amount">{{ cardCount() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card glass-card">
+      <h2>Expenses by Category</h2>
+      <div class="chart-container">
+        <canvas id="categoryDoughnutChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="chart-card glass-card">
+      <h2>Cash Flow (All Time)</h2>
+      <div class="chart-container">
+        <canvas id="cashFlowBarChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>

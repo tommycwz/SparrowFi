@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { StateService } from './services/state.service';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +9,12 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('SparrowFi');
+  constructor(private stateService: StateService) {}
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.stateService.isDirty()) {
+      $event.returnValue = true;
+    }
+  }
 }

@@ -1,0 +1,51 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Categories</h1>
+        <p>Manage your transaction tags (sorted alphabetically)</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <div class="add-section glass-card">
+      <h2>Add Category</h2>
+      <form (ngSubmit)="addCategory()" class="data-form">
+        <div class="form-group">
+          <label for="categoryName">Category Name</label>
+          <input 
+            type="text" 
+            id="categoryName" 
+            [(ngModel)]="newCategoryName" 
+            name="categoryName" 
+            placeholder="e.g. Subscriptions"
+            required>
+        </div>
+        <button type="submit" class="btn-primary" [disabled]="!newCategoryName.trim()">
+          Add Category
+        </button>
+      </form>
+    </div>
+
+    <div class="list-section glass-card">
+      <h2>Existing Categories</h2>
+      
+      <div class="empty-state" *ngIf="categories().length === 0">
+        <div class="icon">🏷️</div>
+        <p>No categories found. Add one to get started!</p>
+      </div>
+
+      <div class="category-items">
+        <div class="category-item" *ngFor="let cat of categories()">
+          <div class="data-info">
+            <h3>{{ cat.name }}</h3>
+          </div>
+          <button class="btn-danger-icon" (click)="deleteCategory(cat.id)" title="Delete Category">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

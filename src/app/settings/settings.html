@@ -1,0 +1,30 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Settings</h1>
+        <p>Configure your SparrowFi experience</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <div class="glass-card">
+      <h2>General Preferences</h2>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>Currency</h3>
+          <p>This will be used for all financial formatting across the application.</p>
+        </div>
+        
+        <div class="setting-control">
+          <select [(ngModel)]="selectedCurrency" (change)="saveSettings()" class="currency-select">
+            <option *ngFor="let c of currencies" [value]="c.code">{{ c.label }}</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

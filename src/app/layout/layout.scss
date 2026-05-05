@@ -1,0 +1,239 @@
+// Sidebar widths
+$sidebar-width: 260px;
+$sidebar-collapsed-width: 72px;
+$transition: 0.3s ease;
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  transition: all $transition;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar {
+  width: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  overflow: hidden;
+  transition: width $transition;
+
+  // ─── Collapsed state ───────────────────────────────────────────
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+
+    .brand-name { display: none; }
+    .toggle-btn span { transform: scaleX(1); }
+    .label { 
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .sidebar-footer {
+      .btn-secondary,
+      .btn-outline {
+        justify-content: center;
+        padding: 0.85rem;
+      }
+    }
+  }
+
+  // ─── Header ────────────────────────────────────────────────────
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding: 0 0.25rem;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      overflow: hidden;
+      flex: 1;
+
+      .app-logo {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .brand-name {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: 0;
+        white-space: nowrap;
+        background: linear-gradient(to right, #00f2fe, #4facfe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+        transition: opacity $transition;
+
+        span {
+          color: white;
+          -webkit-text-fill-color: white;
+        }
+      }
+    }
+
+    .toggle-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.2rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all $transition;
+
+      &:hover {
+        background: #4facfe;
+        border-color: #4facfe;
+        color: white;
+      }
+    }
+  }
+
+  // ─── Navigation ────────────────────────────────────────────────
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 0.9rem;
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all $transition;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+
+      .icon {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .label {
+        transition: opacity $transition, width $transition;
+        opacity: 1;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: white;
+        transform: translateX(3px);
+      }
+
+      &.active {
+        background: linear-gradient(135deg, rgba(0, 242, 254, 0.12) 0%, rgba(79, 172, 254, 0.12) 100%);
+        color: #4facfe;
+        border: 1px solid rgba(79, 172, 254, 0.22);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // ─── Footer ────────────────────────────────────────────────────
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+
+    button {
+      width: 100%;
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      cursor: pointer;
+      transition: all $transition;
+      white-space: nowrap;
+      overflow: hidden;
+
+      .icon { flex-shrink: 0; }
+      .label {
+        transition: opacity $transition, width $transition;
+        opacity: 1;
+      }
+    }
+
+    .btn-secondary {
+      border: none;
+      background: rgba(79, 172, 254, 0.18);
+      color: #4facfe;
+
+      &:hover { background: rgba(79, 172, 254, 0.3); }
+
+      &.pulse { animation: pulse 2s infinite; }
+    }
+
+    .btn-outline {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.75);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+      }
+    }
+  }
+}
+
+// ─── Main content shifts with sidebar ────────────────────────────
+.main-content {
+  flex: 1;
+  margin-left: $sidebar-width;
+  min-height: 100vh;
+  padding: 2rem;
+  transition: margin-left $transition;
+}
+
+.sidebar-collapsed .main-content {
+  margin-left: $sidebar-collapsed-width;
+}
+
+// ─── Animations ──────────────────────────────────────────────────
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(79, 172, 254, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0); }
+}
+
+// ─── Auto-collapse on small screens ──────────────────────────────
+@media (max-width: 900px) {
+  .main-content {
+    margin-left: $sidebar-collapsed-width;
+    padding: 1.25rem;
+  }
+}
