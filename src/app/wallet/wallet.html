@@ -1,0 +1,67 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Wallets</h1>
+        <p>Manage your digital and physical wallets</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <div class="add-section glass-card">
+      <h2>{{ editingId ? 'Edit Wallet' : 'Add New Wallet' }}</h2>
+      <form (ngSubmit)="addWallet()" class="data-form">
+        <div class="form-group">
+          <label for="walletName">Wallet Name</label>
+          <input type="text" id="walletName" [(ngModel)]="newWalletName" name="walletName" placeholder="e.g. GrabPay" required>
+        </div>
+        <div class="form-group">
+          <label for="walletCapital">Initial Balance ({{ stateService.currencySymbol() }})</label>
+          <input type="number" id="walletCapital" [(ngModel)]="newWalletCapital" name="walletCapital" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label for="walletColor">Wallet Color</label>
+          <input type="color" id="walletColor" [(ngModel)]="newWalletColor" name="walletColor" style="height: 45px; cursor: pointer; padding: 5px;" required>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn-primary" [disabled]="!newWalletName || newWalletCapital === null" style="flex: 2;">
+            {{ editingId ? 'Update Wallet' : 'Add Wallet' }}
+          </button>
+          <button type="button" *ngIf="editingId" (click)="cancelEdit()" class="btn-secondary" style="flex: 1;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="list-section glass-card">
+      <h2>Your Wallets</h2>
+
+      <div class="empty-state" *ngIf="wallets().length === 0">
+        <div class="icon">👛</div>
+        <p>You haven't added any wallets yet.</p>
+      </div>
+
+      <div class="data-items">
+        <div class="data-item" *ngFor="let wallet of wallets()">
+          <div class="data-info">
+            <span class="color-dot" [style.background-color]="wallet.color || '#888'"></span>
+            <div class="account-details">
+              <h3>{{ wallet.name }}</h3>
+              <p class="sub-info">Balance: <span>{{ stateService.currencySymbol() }}{{ getWalletBalance(wallet.id) | number:'1.2-2' }}</span></p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-edit-icon" (click)="editWallet(wallet.id)" title="Edit Wallet">
+              ✏️
+            </button>
+            <button class="btn-danger-icon" (click)="deleteWallet(wallet.id)" title="Delete Wallet">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

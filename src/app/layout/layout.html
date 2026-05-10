@@ -15,7 +15,8 @@
         <span class="icon">📊</span>
         <span class="label">Dashboard</span>
       </a>
-      <a routerLink="/transaction" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Transactions' : ''">
+      <a routerLink="/transaction" routerLinkActive="active" class="nav-item"
+        [title]="isCollapsed() ? 'Transactions' : ''">
         <span class="icon">💸</span>
         <span class="label">Transactions</span>
       </a>
@@ -23,9 +24,14 @@
         <span class="icon">🏦</span>
         <span class="label">Banks</span>
       </a>
-      <a routerLink="/credit-card" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Credit Cards' : ''">
+      <a routerLink="/wallet" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Wallets' : ''">
+        <span class="icon">👛</span>
+        <span class="label">Wallets</span>
+      </a>
+      <a routerLink="/card" routerLinkActive="active" class="nav-item"
+        [title]="isCollapsed() ? 'Cards' : ''">
         <span class="icon">💳</span>
-        <span class="label">Credit Cards</span>
+        <span class="label">Cards</span>
       </a>
       <a routerLink="/category" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Categories' : ''">
         <span class="icon">🏷️</span>
@@ -38,7 +44,8 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="btn-secondary" (click)="exportData()" [class.pulse]="stateService.isDirty()" [title]="isCollapsed() ? 'Export .spw' : ''">
+      <button class="btn-secondary" (click)="exportData()" [class.pulse]="stateService.isDirty()"
+        [title]="isCollapsed() ? 'Export .spw' : ''">
         <span class="icon">💾</span>
         <span class="label">Export .spw</span>
       </button>

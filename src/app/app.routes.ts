@@ -10,7 +10,8 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent) },
       { path: 'transaction', loadComponent: () => import('./transaction/transaction').then(m => m.TransactionComponent) },
       { path: 'bank', loadComponent: () => import('./bank/bank').then(m => m.BankComponent) },
-      { path: 'credit-card', loadComponent: () => import('./credit-card/credit-card').then(m => m.CreditCardComponent) },
+      { path: 'wallet', loadComponent: () => import('./wallet/wallet').then(m => m.WalletComponent) },
+      { path: 'card', loadComponent: () => import('./card/card').then(m => m.CardComponent) },
       { path: 'category', loadComponent: () => import('./category/category').then(m => m.CategoryComponent) },
       { path: 'settings', loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) }
     ]

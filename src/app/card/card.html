@@ -1,0 +1,60 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Cards</h1>
+        <p>Manage your card accounts</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <div class="add-section glass-card">
+      <h2>{{ editingId ? 'Edit Card' : 'Add New Card' }}</h2>
+      <form (ngSubmit)="addCard()" class="data-form">
+        <div class="form-group">
+          <label for="cardName">Card Name</label>
+          <input type="text" id="cardName" [(ngModel)]="newCardName" name="cardName" placeholder="e.g. Chase Sapphire" required>
+        </div>
+        <div class="form-group">
+          <label for="cardColor">Card Color</label>
+          <input type="color" id="cardColor" [(ngModel)]="newCardColor" name="cardColor" style="height: 45px; cursor: pointer; padding: 5px;" required>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn-primary" [disabled]="!newCardName" style="flex: 2;">
+            {{ editingId ? 'Update Card' : 'Add Card' }}
+          </button>
+          <button type="button" *ngIf="editingId" (click)="cancelEdit()" class="btn-secondary" style="flex: 1;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="list-section glass-card">
+      <h2>Your Cards</h2>
+      
+      <div class="empty-state" *ngIf="cards().length === 0">
+        <div class="icon">💳</div>
+        <p>You haven't added any cards yet.</p>
+      </div>
+
+      <div class="data-items">
+        <div class="data-item" *ngFor="let card of cards()">
+          <div class="data-info">
+            <span class="color-dot" [style.background-color]="card.color || '#888'"></span>
+            <h3>{{ card.name }}</h3>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-edit-icon" (click)="editCard(card.id)" title="Edit Card">
+              ✏️
+            </button>
+            <button class="btn-danger-icon" (click)="deleteCard(card.id)" title="Delete Card">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

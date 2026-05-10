@@ -1,5 +1,5 @@
-<div class="bank-container">
-  <header class="bank-header">
+<div class="module-container">
+  <header class="module-header">
     <div class="title-area">
       <div>
         <h1>Bank Accounts</h1>
@@ -9,47 +9,57 @@
   </header>
 
   <div class="content-grid">
-    <div class="add-bank-section glass-card">
-      <h2>Add New Bank</h2>
-      <form (ngSubmit)="addBank()" class="bank-form">
+    <div class="add-section glass-card">
+      <h2>{{ editingId ? 'Edit Bank' : 'Add New Bank' }}</h2>
+      <form (ngSubmit)="addBank()" class="data-form">
         <div class="form-group">
           <label for="bankName">Bank Name</label>
-          <input 
-            type="text" 
-            id="bankName" 
-            [(ngModel)]="newBankName" 
-            name="bankName" 
-            placeholder="e.g. Chase, Bank of America"
-            required>
+          <input type="text" id="bankName" [(ngModel)]="newBankName" name="bankName" placeholder="e.g. Chase" required>
         </div>
         <div class="form-group">
           <label for="bankCapital">Initial Capital ({{ stateService.currencySymbol() }})</label>
-          <input type="number" id="bankCapital" [(ngModel)]="newBankCapital" name="bankCapital" placeholder="e.g. 10000" required>
+          <input type="number" id="bankCapital" [(ngModel)]="newBankCapital" name="bankCapital" placeholder="0.00" required>
         </div>
-        <button type="submit" class="btn-primary" [disabled]="!newBankName || newBankCapital === null">
-          Add Bank
-        </button>
+        <div class="form-group">
+          <label for="bankColor">Bank Color</label>
+          <input type="color" id="bankColor" [(ngModel)]="newBankColor" name="bankColor" style="height: 45px; cursor: pointer; padding: 5px;" required>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn-primary" [disabled]="!newBankName || newBankCapital === null" style="flex: 2;">
+            {{ editingId ? 'Update Bank' : 'Add Bank' }}
+          </button>
+          <button type="button" *ngIf="editingId" (click)="cancelEdit()" class="btn-secondary" style="flex: 1;">
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
 
-    <div class="banks-list-section glass-card">
+    <div class="list-section glass-card">
       <h2>Your Banks</h2>
-      
+
       <div class="empty-state" *ngIf="banks().length === 0">
         <div class="icon">🏦</div>
         <p>You haven't added any banks yet.</p>
       </div>
 
-      <div class="bank-items">
-        <div class="bank-item" *ngFor="let bank of banks()">
+      <div class="data-items">
+        <div class="data-item" *ngFor="let bank of banks()">
           <div class="data-info">
-            <h3>{{ bank.name }}</h3>
-            <p class="capital">Current Balance: <span>{{ stateService.currencySymbol() }}{{ getBankBalance(bank.id) | number:'1.2-2' }}</span></p>
-            <p class="sub-text">Initial Capital: {{ stateService.currencySymbol() }}{{ bank.initialCapital | number:'1.2-2' }}</p>
+            <span class="color-dot" [style.background-color]="bank.color || '#888'"></span>
+            <div class="account-details">
+              <h3>{{ bank.name }}</h3>
+              <p class="sub-info">Balance: <span>{{ stateService.currencySymbol() }}{{ getBankBalance(bank.id) | number:'1.2-2' }}</span></p>
+            </div>
           </div>
-          <button class="btn-danger-icon" (click)="deleteBank(bank.id)" title="Delete Bank">
-            🗑️
-          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-edit-icon" (click)="editBank(bank.id)" title="Edit Bank">
+              ✏️
+            </button>
+            <button class="btn-danger-icon" (click)="deleteBank(bank.id)" title="Delete Bank">
+              🗑️
+            </button>
+          </div>
         </div>
       </div>
     </div>

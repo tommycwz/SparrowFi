@@ -1,142 +1,223 @@
 <div class="module-container">
+  <!-- 1. Header Area -->
   <header class="module-header">
     <div class="title-area">
       <div>
         <h1>Transactions</h1>
-        <p>Record and analyze your financial flow</p>
+        <p>Your financial flow for <span>{{ displayMonth() }}</span></p>
       </div>
-      <div class="action-buttons">
+      <div class="header-actions">
         <input type="file" #csvInput hidden accept=".csv" (change)="importCSV($event)">
-        <button class="btn-secondary import-btn" (click)="csvInput.click()">
-          <span class="icon">📥</span> Import CSV
-        </button>
-        <button class="btn-secondary export-btn" (click)="exportCSV()">
-          <span class="icon">📊</span> Export CSV
-        </button>
+        <button class="btn-secondary" (click)="csvInput.click()">📥 Import</button>
+        <button class="btn-secondary" (click)="exportCSV()">📊 Export</button>
       </div>
     </div>
   </header>
 
-  <div class="content-grid">
-    <div class="add-section glass-card">
-      <h2>Add Transaction</h2>
-      <form (ngSubmit)="addTransaction()" class="data-form">
-
-        <div class="form-group row-group">
-            <div class="input-half">
-                <label>Type</label>
-                <div class="toggle-group">
-                    <button type="button" class="toggle-btn" [class.active]="newType === 'expense'" (click)="newType = 'expense'">Expense</button>
-                    <button type="button" class="toggle-btn income" [class.active]="newType === 'income'" (click)="newType = 'income'">Income</button>
-                </div>
-            </div>
-            <div class="input-half">
-                <label for="transAmount">Amount ({{ stateService.currencySymbol() }})</label>
-                <input type="number" id="transAmount" [(ngModel)]="newAmount" name="transAmount" placeholder="e.g. 50" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-          <label for="transDate">Date</label>
-          <input type="date" id="transDate" [(ngModel)]="newDate" name="transDate" required>
-        </div>
-
-        <div class="form-group">
-          <label for="transAccount">Account</label>
-          <select id="transAccount" [(ngModel)]="newCombinedAccount" name="transAccount" required>
-            <option value="">Select Account</option>
-            <optgroup label="Banks" *ngIf="banks().length > 0">
-              <option *ngFor="let b of banks()" [value]="'bank:' + b.id">{{ b.name }}</option>
-            </optgroup>
-            <optgroup label="Cards" *ngIf="cards().length > 0">
-              <option *ngFor="let c of cards()" [value]="'card:' + c.id">{{ c.name }}</option>
-            </optgroup>
-            <optgroup label="System">
-              <option value="cash:cash">Cash</option>
-              <option value="others:others">Others</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="transCategory">Category</label>
-          <select id="transCategory" [(ngModel)]="newCategoryId" name="transCategory" required>
-            <option value="">Select Category</option>
-            <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="transNotes">Notes</label>
-          <input type="text" id="transNotes" [(ngModel)]="newNotes" name="transNotes" placeholder="Optional notes">
-        </div>
-
-        <button type="submit" class="btn-primary" [disabled]="!newDate || newAmount === null || !newCombinedAccount || !newCategoryId">
-          Record Transaction
-        </button>
-      </form>
+  <!-- 2. Monthly Summary Bar -->
+  <div class="summary-bar glass-card">
+    <div class="summary-item income">
+      <span class="label">Monthly Income</span>
+      <span class="value">+{{ stateService.currencySymbol() }}{{ monthlyIncome() | number:'1.2-2' }}</span>
     </div>
+    <div class="summary-divider"></div>
+    <div class="summary-item expense">
+      <span class="label">Monthly Expense</span>
+      <span class="value">-{{ stateService.currencySymbol() }}{{ monthlyExpense() | number:'1.2-2' }}</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-item balance">
+      <span class="label">Net Balance</span>
+      <span class="value" [class.negative]="monthlyIncome() - monthlyExpense() < 0">
+        {{ stateService.currencySymbol() }}{{ (monthlyIncome() - monthlyExpense()) | number:'1.2-2' }}
+      </span>
+    </div>
+  </div>
 
-    <div class="list-section glass-card">
-      <div class="list-header month-nav">
-        <button class="nav-btn" (click)="previousMonth()">←</button>
-        <h2 class="month-title">{{ displayMonth() }}</h2>
-        <button class="nav-btn" (click)="nextMonth()">→</button>
-      </div>
-      
-      <div class="list-header filters-header">
-        <div class="filters">
-          <input type="text" [(ngModel)]="filterText" placeholder="Search notes..." class="filter-input">
-          <select [(ngModel)]="filterType" class="filter-select">
-            <option value="">All Types</option>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-          <select [(ngModel)]="filterCombinedAccount" class="filter-select">
-            <option value="">All Accounts</option>
-            <optgroup label="Banks" *ngIf="banks().length > 0">
-              <option *ngFor="let b of banks()" [value]="'bank:' + b.id">{{ b.name }}</option>
-            </optgroup>
-            <optgroup label="Cards" *ngIf="cards().length > 0">
-              <option *ngFor="let c of cards()" [value]="'card:' + c.id">{{ c.name }}</option>
-            </optgroup>
-            <optgroup label="System">
-              <option value="cash:cash">Cash</option>
-              <option value="others:others">Others</option>
-            </optgroup>
-          </select>
-          <select [(ngModel)]="filterCategoryId" class="filter-select">
-            <option value="">All Categories</option>
-            <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="empty-state" *ngIf="transactions().length === 0">
-        <div class="icon">💸</div>
-        <p>No transactions found for this month.</p>
+  <!-- 3. Navigation & Actions Bar -->
+  <div class="nav-actions-bar">
+    <div class="month-selector">
+      <button class="nav-btn" (click)="previousMonth()">←</button>
+      <span class="current-month">{{ displayMonth() }}</span>
+      <button class="nav-btn" (click)="nextMonth()">→</button>
+    </div>
+    
+    <button class="btn-primary add-toggle-btn" (click)="showAddForm = true">
+      <span class="icon">＋</span> Add Transaction
+    </button>
+  </div>
+
+  <!-- 4. MODAL: Add/Edit Transaction -->
+  <div class="modal-overlay" *ngIf="showAddForm" (click)="cancelEdit()">
+    <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingTransactionId ? 'Edit Transaction' : 'Record Transaction' }}</h2>
+        <button class="close-btn" (click)="cancelEdit()">✕</button>
       </div>
 
-      <div class="data-items">
-        <div class="data-item" *ngFor="let t of transactions()">
-          <div class="data-info">
-            <div class="item-header">
-              <span class="date">{{ t.date | date:'d MMM yyyy' }}</span>
-              <span class="category">{{ getCategoryName(t.categoryId) }}</span>
-            </div>
-            <div class="item-main">
-              <div class="left-col">
-                <span class="account-badge">{{ getAccountName(t.accountType, t.accountId) }} ({{t.accountType}})</span>
-                <span class="notes" *ngIf="t.notes">{{ t.notes }}</span>
+      <form (ngSubmit)="addTransaction()" class="modal-form">
+        <div class="form-grid">
+          <!-- Type & Amount -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Transaction Type</label>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn" [class.active]="newType() === 'expense'" (click)="newTypeToggle('expense')">Expense</button>
+                <button type="button" class="toggle-btn income" [class.active]="newType() === 'income'" (click)="newTypeToggle('income')">Income</button>
               </div>
-              <div class="right-col">
-                <span class="amount" [ngClass]="t.type">
-                  <span *ngIf="t.type === 'expense'">-</span><span *ngIf="t.type === 'income'">+</span>{{ stateService.currencySymbol() }}{{ t.amount | number:'1.2-2' }}
-                </span>
-                <button class="btn-danger-icon" (click)="deleteTransaction(t.id)" title="Delete">🗑️</button>
+            </div>
+            <div class="form-group">
+              <label>Amount ({{ stateService.currencySymbol() }})</label>
+              <input type="number" [(ngModel)]="newAmount" name="newAmount" placeholder="0.00" required autofocus>
+            </div>
+          </div>
+
+          <!-- Date & Time Logic -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" [(ngModel)]="newDate" name="newDate" required>
+            </div>
+            <div class="form-group" *ngIf="!autoTime">
+              <label>Time</label>
+              <input type="time" [(ngModel)]="newTime" name="newTime">
+            </div>
+            <div class="form-group auto-time-field">
+              <label class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="autoTime" name="autoTime">
+                <span class="checkmark"></span>
+                <span class="label-text">Auto capture time</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Account & Category -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Account</label>
+              <div class="custom-select-container">
+                <div class="select-trigger" (click)="toggleAccountDropdown($event)" [class.has-value]="newCombinedAccount">
+                  <span *ngIf="!newCombinedAccount">Choose Account</span>
+                  <span *ngIf="newCombinedAccount" class="selection">
+                    <span class="dot" [style.background-color]="getAccountColor(newCombinedAccount.split(':')[0], newCombinedAccount.split(':')[1])"></span>
+                    {{ getAccountName(newCombinedAccount.split(':')[0], newCombinedAccount.split(':')[1]) }}
+                  </span>
+                  <span class="chevron">▼</span>
+                </div>
+                <div class="select-options glass-card shadow-lg" *ngIf="showAccountDropdown">
+                  <div class="opt-group" *ngIf="banks().length > 0">
+                    <div class="group-label">Banks</div>
+                    <div class="option" *ngFor="let b of banks()" (click)="selectAccount('bank', b.id)">
+                      <span class="dot" [style.background-color]="b.color"></span>
+                      <span class="name">{{ b.name }}</span>
+                    </div>
+                  </div>
+                  <div class="opt-group" *ngIf="wallets().length > 0">
+                    <div class="group-label">Wallets</div>
+                    <div class="option" *ngFor="let w of wallets()" (click)="selectAccount('wallet', w.id)">
+                      <span class="dot" [style.background-color]="w.color"></span>
+                      <span class="name">{{ w.name }}</span>
+                    </div>
+                  </div>
+                  <div class="opt-group" *ngIf="cards().length > 0">
+                    <div class="group-label">Cards</div>
+                    <div class="option" *ngFor="let c of cards()" (click)="selectAccount('card', c.id)">
+                      <span class="dot" [style.background-color]="c.color"></span>
+                      <span class="name">{{ c.name }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <div class="custom-select-container">
+                <div class="select-trigger" (click)="toggleCategoryDropdown($event)" [class.has-value]="newCategoryId">
+                  <span *ngIf="!newCategoryId">Choose Category</span>
+                  <span *ngIf="newCategoryId" class="selection">
+                    <span class="dot" [style.background-color]="getCategoryColor(newCategoryId)"></span>
+                    {{ getCategoryName(newCategoryId) }}
+                  </span>
+                  <span class="chevron">▼</span>
+                </div>
+                <div class="select-options glass-card shadow-lg" *ngIf="showCategoryDropdown">
+                  <div class="option" *ngFor="let cat of filteredCategories()" (click)="selectCategory(cat.id)">
+                    <span class="dot" [style.background-color]="cat.color"></span>
+                    <span class="name">{{ cat.name }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <div class="form-group full-width">
+            <label>Notes</label>
+            <input type="text" [(ngModel)]="newNotes" name="newNotes" placeholder="Optional description...">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="!newDate || newAmount === null || !newCombinedAccount || !newCategoryId">
+              {{ editingTransactionId ? 'Save Changes' : 'Confirm Transaction' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. List Section -->
+  <div class="list-section">
+    <div class="list-filters glass-card">
+      <input type="text" [(ngModel)]="filterText" placeholder="Search by notes..." class="search-input">
+      <select [(ngModel)]="filterType">
+        <option value="">All Types</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <select [(ngModel)]="filterCategoryId">
+        <option value="">All Categories</option>
+        <option *ngFor="let cat of stateService.state().categories" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+    </div>
+
+    <div class="transactions-list">
+      <div class="empty-state" *ngIf="transactions().length === 0">
+        <div class="icon">✨</div>
+        <p>No transactions found. Ready to record your first flow?</p>
+      </div>
+
+      <div class="transaction-row glass-card" *ngFor="let t of transactions()">
+        <div class="row-date">
+          <span class="day">{{ t.date | date:'dd' }}</span>
+          <span class="month">{{ t.date | date:'MMM' }}</span>
+        </div>
+        
+        <div class="row-main">
+          <div class="item-meta">
+            <span class="category-tag">
+              <span class="dot" [style.background-color]="getCategoryColor(t.categoryId)"></span>
+              {{ getCategoryName(t.categoryId) }}
+            </span>
+            <span class="account-tag">
+              <span class="dot" [style.background-color]="getAccountColor(t.accountType, t.accountId)"></span>
+              {{ getAccountName(t.accountType, t.accountId) }}
+            </span>
+            <span class="time" *ngIf="t.time">{{ t.time }}</span>
+          </div>
+          <div class="notes" *ngIf="t.notes">{{ t.notes }}</div>
+          <div class="notes placeholder" *ngIf="!t.notes">No notes provided</div>
+        </div>
+
+        <div class="row-amount" [ngClass]="t.type">
+          <span class="sign">{{ t.type === 'expense' ? '-' : '+' }}</span>
+          <span class="currency">{{ stateService.currencySymbol() }}</span>
+          <span class="value">{{ t.amount | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn-action edit" (click)="editTransaction(t)" title="Edit">✏️</button>
+          <button class="btn-action delete" (click)="deleteTransaction(t.id)" title="Delete">🗑️</button>
         </div>
       </div>
     </div>

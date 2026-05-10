@@ -2,6 +2,7 @@ import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '../services/state.service';
+import packageInfo from '../../../package.json';
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +12,7 @@ import { StateService } from '../services/state.service';
   styleUrls: ['./settings.scss']
 })
 export class SettingsComponent {
+  version = packageInfo.version;
   currencies = [
     { code: 'myr', label: 'MYR - Malaysian Ringgit (RM)' },
     { code: 'usd', label: 'USD - US Dollar ($)' },

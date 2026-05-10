@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, HostListener } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService, Transaction } from '../services/state.service';
@@ -13,8 +13,10 @@ import { StateService, Transaction } from '../services/state.service';
 })
 export class TransactionComponent {
   // Form fields
-  newType: 'income' | 'expense' = 'expense';
+  newType = signal<'income' | 'expense'>('expense');
   newDate = new Date().toISOString().split('T')[0];
+  newTime = new Date().toTimeString().slice(0, 5); // HH:mm
+  autoTime = true; // auto-fill current time on submit
   newAmount: number | null = null;
   newCombinedAccount = ''; // Format: "type:id" (e.g. "bank:uuid", "cash:cash")
   newCategoryId = '';
@@ -22,10 +24,52 @@ export class TransactionComponent {
 
   // Filter fields
   filterText = '';
-  filterCombinedAccount = ''; // For history filtering
+  filterCombinedAccount = '';
   filterCategoryId = '';
   filterType = ''; // '' | 'income' | 'expense'
   filterMonth = signal<Date>(new Date());
+  showAddForm = false;
+  editingTransactionId: string | null = null;
+
+  // Dropdown states
+  showAccountDropdown = false;
+  showCategoryDropdown = false;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-select-container')) {
+      this.showAccountDropdown = false;
+      this.showCategoryDropdown = false;
+    }
+  }
+
+  toggleAccountDropdown(event: Event) {
+    event.stopPropagation();
+    this.showAccountDropdown = !this.showAccountDropdown;
+    this.showCategoryDropdown = false;
+  }
+
+  toggleCategoryDropdown(event: Event) {
+    event.stopPropagation();
+    this.showCategoryDropdown = !this.showCategoryDropdown;
+    this.showAccountDropdown = false;
+  }
+
+  selectAccount(type: string, id: string) {
+    this.newCombinedAccount = `${type}:${id}`;
+    this.showAccountDropdown = false;
+  }
+
+  selectCategory(id: string) {
+    this.newCategoryId = id;
+    this.showCategoryDropdown = false;
+  }
+
+  newTypeToggle(type: 'income' | 'expense') {
+    this.newType.set(type);
+    this.newCategoryId = ''; // Reset category when type changes
+  }
 
   // Display Month (e.g., "May 2026")
   displayMonth = computed(() => {
@@ -35,9 +79,27 @@ export class TransactionComponent {
   // Options
   banks = computed(() => this.stateService.state().banks || []);
   cards = computed(() => this.stateService.state().cards || []);
+  wallets = computed(() => this.stateService.state().wallets || []);
   
   // Flattened categories for easier selection
-  categories = computed(() => this.stateService.state().categories || []);
+  // Filtered categories based on selected transaction type
+  filteredCategories = computed(() => {
+    const all = this.stateService.state().categories || [];
+    return all.filter(c => !c.type || c.type === this.newType());
+  });
+
+  // Monthly Summaries
+  monthlyIncome = computed(() => {
+    return this.transactions()
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+  });
+
+  monthlyExpense = computed(() => {
+    return this.transactions()
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+  });
 
   // Filtered transactions
   transactions = computed(() => {
@@ -88,23 +150,61 @@ export class TransactionComponent {
 
   addTransaction() {
     if (this.newDate && this.newAmount !== null && this.newCombinedAccount && this.newCategoryId) {
-      
-      const [accType, accId] = this.newCombinedAccount.split(':');
 
-      this.stateService.addTransaction({
+      const [accType, accId] = this.newCombinedAccount.split(':');
+      const resolvedTime = this.autoTime
+        ? new Date().toTimeString().slice(0, 5)
+        : this.newTime;
+
+      const transactionData = {
         date: this.newDate,
+        time: resolvedTime,
         amount: this.newAmount,
-        type: this.newType,
+        type: this.newType(),
         accountType: accType as any,
         accountId: accId,
         categoryId: this.newCategoryId,
         notes: this.newNotes
-      });
+      };
 
-      this.newAmount = null;
-      this.newNotes = '';
-      this.newCombinedAccount = '';
-      this.newCategoryId = '';
+      if (this.editingTransactionId) {
+        this.stateService.updateTransaction(this.editingTransactionId, transactionData);
+        this.editingTransactionId = null;
+      } else {
+        this.stateService.addTransaction(transactionData);
+      }
+
+      this.resetForm();
+    }
+  }
+
+  editTransaction(t: Transaction) {
+    this.editingTransactionId = t.id;
+    this.newType.set(t.type);
+    this.newAmount = t.amount;
+    this.newDate = t.date;
+    this.newTime = t.time || '12:00';
+    this.newCombinedAccount = `${t.accountType}:${t.accountId}`;
+    this.newCategoryId = t.categoryId;
+    this.newNotes = t.notes;
+    this.autoTime = false; // Disable auto-time when editing
+    this.showAddForm = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  private resetForm() {
+    this.editingTransactionId = null;
+    this.newAmount = null;
+    this.newNotes = '';
+    this.newCombinedAccount = '';
+    this.newCategoryId = '';
+    this.showAddForm = false;
+    if (this.autoTime) {
+      this.newTime = new Date().toTimeString().slice(0, 5);
     }
   }
 
@@ -125,12 +225,34 @@ export class TransactionComponent {
       const c = this.cards().find(x => x.id === id);
       return c ? c.name : 'Unknown Card';
     }
+    if (type === 'wallet') {
+      const w = this.wallets().find(x => x.id === id);
+      return w ? w.name : 'Unknown Wallet';
+    }
     return 'Unknown';
   }
 
   getCategoryName(id: string): string {
-    const cat = this.categories().find(x => x.id === id);
+    const cat = this.stateService.state().categories.find((x: any) => x.id === id);
     return cat ? cat.name : 'Unknown Category';
+  }
+
+  getCategoryColor(id: string): string {
+    const cat = this.stateService.state().categories.find((x: any) => x.id === id);
+    return cat?.color || '#888888';
+  }
+
+  getAccountColor(type: string, id: string): string {
+    if (type === 'bank') {
+      return this.banks().find((x: any) => x.id === id)?.color || '#4facfe';
+    }
+    if (type === 'card') {
+      return this.cards().find((x: any) => x.id === id)?.color || '#ff4b4b';
+    }
+    if (type === 'wallet') {
+      return this.wallets().find((x: any) => x.id === id)?.color || '#00f2fe';
+    }
+    return '#888888';
   }
 
   exportCSV() {
@@ -208,20 +330,19 @@ export class TransactionComponent {
       // Find or create category
       let categoryId = '';
       const cleanCatName = categoryName.replace(/^"|"$/g, '');
-      const existingCat = this.categories().find(c => c.name.toLowerCase() === cleanCatName.toLowerCase());
+      const existingCat = this.stateService.state().categories.find((c: any) => c.name.toLowerCase() === cleanCatName.toLowerCase());
       if (existingCat) {
         categoryId = existingCat.id;
       } else {
-        categoryId = crypto.randomUUID();
         this.stateService.addCategory(cleanCatName);
         // Try to fetch it again since state is updated
-        const newCat = this.stateService.state().categories.find(c => c.name.toLowerCase() === cleanCatName.toLowerCase());
+        const newCat = this.stateService.state().categories.find((c: any) => c.name.toLowerCase() === cleanCatName.toLowerCase());
         if (newCat) categoryId = newCat.id;
       }
 
       // Find account
       let accId = '';
-      let parsedAccType: 'bank' | 'card' | 'cash' | 'others' = accountType as any;
+      let parsedAccType: 'bank' | 'card' | 'cash' | 'others' | 'wallet' = accountType as any;
       const cleanAccName = accountName.replace(/^"|"$/g, '');
       
       if (parsedAccType === 'bank') {
@@ -230,6 +351,9 @@ export class TransactionComponent {
       } else if (parsedAccType === 'card') {
         const c = this.cards().find(x => x.name.toLowerCase() === cleanAccName.toLowerCase());
         accId = c ? c.id : 'unknown';
+      } else if (parsedAccType === 'wallet') {
+        const w = this.wallets().find(x => x.name.toLowerCase() === cleanAccName.toLowerCase());
+        accId = w ? w.id : 'unknown';
       } else if (parsedAccType === 'cash') {
         accId = 'cash';
       } else {

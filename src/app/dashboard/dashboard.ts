@@ -109,7 +109,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     for (const t of transactions) {
       if (t.type === 'expense') {
         totalExpense += t.amount;
-        const cat = categories.find(c => c.id === t.categoryId);
+        const cat = categories.find((c: any) => c.id === t.categoryId);
         const catName = cat ? cat.name : 'Uncategorized';
         expensesByCategory[catName] = (expensesByCategory[catName] || 0) + t.amount;
       } else if (t.type === 'income') {
@@ -120,8 +120,13 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     if (this.doughnutChart) {
       this.doughnutChart.data.labels = Object.keys(expensesByCategory);
       this.doughnutChart.data.datasets[0].data = Object.values(expensesByCategory);
-      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4bc0c0', '#9966ff', '#ff9f40', '#00f2fe', '#4facfe'];
-      this.doughnutChart.data.datasets[0].backgroundColor = Object.keys(expensesByCategory).map((_, i) => colors[i % colors.length]);
+      
+      // Map custom category colors
+      this.doughnutChart.data.datasets[0].backgroundColor = Object.keys(expensesByCategory).map(name => {
+        const cat = categories.find((c: any) => c.name === name);
+        return cat?.color || '#FF6384';
+      });
+
       this.doughnutChart.update();
     }
 

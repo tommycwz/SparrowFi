@@ -1,16 +1,21 @@
 <div class="module-container">
   <header class="module-header">
     <div class="title-area">
-      <div>
-        <h1>Categories</h1>
-        <p>Manage your transaction tags (sorted alphabetically)</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+          <h1>Categories</h1>
+          <p>Manage your transaction tags (sorted alphabetically)</p>
+        </div>
+        <button class="btn-secondary" (click)="randomizeColors()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.75rem 1.5rem; border-radius: 10px; cursor: pointer;">
+          🔀 Shuffle Colors
+        </button>
       </div>
     </div>
   </header>
 
   <div class="content-grid">
     <div class="add-section glass-card">
-      <h2>Add Category</h2>
+      <h2>{{ editingId ? 'Edit Category' : 'Add Category' }}</h2>
       <form (ngSubmit)="addCategory()" class="data-form">
         <div class="form-group">
           <label for="categoryName">Category Name</label>
@@ -22,28 +27,63 @@
             placeholder="e.g. Subscriptions"
             required>
         </div>
-        <button type="submit" class="btn-primary" [disabled]="!newCategoryName.trim()">
-          Add Category
-        </button>
+        <div class="form-group">
+          <label for="categoryColor">Category Color</label>
+          <input 
+            type="color" 
+            id="categoryColor" 
+            [(ngModel)]="newCategoryColor" 
+            name="categoryColor" 
+            style="height: 45px; cursor: pointer; padding: 5px;"
+            required>
+        </div>
+        <div class="form-group">
+          <label for="categoryType">Category Type</label>
+          <select id="categoryType" [(ngModel)]="newCategoryType" name="categoryType" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn-primary" [disabled]="!newCategoryName.trim()" style="flex: 2;">
+            {{ editingId ? 'Update Category' : 'Add Category' }}
+          </button>
+          <button type="button" *ngIf="editingId" (click)="cancelEdit()" class="btn-secondary" style="flex: 1;">
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
 
     <div class="list-section glass-card">
-      <h2>Existing Categories</h2>
+      <div class="list-header-tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'income'" (click)="activeTab = 'income'">
+          Income ({{ incomeCategories().length }})
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'expense'" (click)="activeTab = 'expense'">
+          Expenses ({{ expenseCategories().length }})
+        </button>
+      </div>
       
-      <div class="empty-state" *ngIf="categories().length === 0">
+      <div class="empty-state" *ngIf="(activeTab === 'expense' ? expenseCategories().length : incomeCategories().length) === 0">
         <div class="icon">🏷️</div>
-        <p>No categories found. Add one to get started!</p>
+        <p>No {{ activeTab }} categories found.</p>
       </div>
 
-      <div class="category-items">
-        <div class="category-item" *ngFor="let cat of categories()">
+      <div class="data-items">
+        <div class="data-item" *ngFor="let cat of (activeTab === 'expense' ? expenseCategories() : incomeCategories())">
           <div class="data-info">
+            <span class="color-dot" [style.background-color]="cat.color || '#888'"></span>
             <h3>{{ cat.name }}</h3>
           </div>
-          <button class="btn-danger-icon" (click)="deleteCategory(cat.id)" title="Delete Category">
-            🗑️
-          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-edit-icon" (click)="editCategory(cat.id)" title="Edit Category">
+              ✏️
+            </button>
+            <button class="btn-danger-icon" (click)="deleteCategory(cat.id)" title="Delete Category">
+              🗑️
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,190 @@
+@use "sass:color";
+
+// Base variables
+$b: #4facfe;
+$r: #ff4b4b;
+$c: #00f2fe;
+$br: rgba(255, 255, 255, .1);
+$dk: rgba(0, 0, 0, .2);
+
+@mixin form-base($accent: $b) {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    label {
+      color: rgba(255, 255, 255, .8);
+      font-size: .9rem;
+    }
+
+    input, select {
+      background: $dk;
+      border: 1px solid $br;
+      padding: 1rem;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      box-sizing: border-box;
+      width: 100%;
+      transition: all 0.3s;
+
+      &:focus {
+        outline: none;
+        border-color: $accent;
+        background: rgba(0, 0, 0, .3);
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, .3);
+      }
+
+      option {
+        background: #1e293b;
+        color: white;
+      }
+    }
+  }
+
+  .btn-primary {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, color.adjust($accent, $lightness: 10%) 0%, $accent 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .3s;
+
+    &:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -10px $accent;
+    }
+  }
+
+  .btn-secondary {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+@mixin data-items-base($accent: $b) {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.25rem;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba($accent, 0.2);
+      transform: translateX(5px);
+    }
+
+    .data-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .color-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      h3 {
+        margin: 0;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .sub-info {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+
+        span {
+          color: $accent;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .btn-edit-icon {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      font-size: 1rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+    }
+
+    .btn-danger-icon {
+      background: rgba($r, 0.1);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      font-size: 1.1rem;
+
+      &:hover {
+        background: rgba($r, 0.3);
+        transform: scale(1.1);
+      }
+    }
+  }
+}

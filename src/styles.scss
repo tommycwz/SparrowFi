@@ -8,6 +8,8 @@
   --text-muted: #94a3b8;
   --card-bg: rgba(255, 255, 255, 0.03);
   --card-border: rgba(255, 255, 255, 0.08);
+  --accent: #4facfe;
+  --accent-r: 255, 75, 75;
 }
 
 body {
@@ -20,21 +22,230 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* --- Global Module Layout System --- */
+.module-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .module-header {
+    margin-bottom: 3rem;
+    .title-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      h1 {
+        font-size: 2.5rem;
+        margin: 0;
+        background: linear-gradient(to right, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      p { color: rgba(255, 255, 255, .6); margin: .5rem 0 0; span { color: var(--accent); font-weight: 600; } }
+    }
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, .05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2rem;
+  }
+
+  h2 { margin: 0 0 2rem; color: white; font-size: 1.5rem; }
+
+  /* --- Forms --- */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    label { color: rgba(255, 255, 255, .8); font-size: .9rem; }
+    input, select {
+      background: rgba(0, 0, 0, .2);
+      border: 1px solid var(--card-border);
+      padding: 1rem;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      width: 100%;
+      transition: all 0.3s;
+      &:focus { outline: none; border-color: var(--accent); background: rgba(0, 0, 0, .3); }
+      &::placeholder { color: rgba(255, 255, 255, .3); }
+      option { background: #1e293b; color: white; }
+    }
+  }
+
+  /* --- Buttons --- */
+  .btn-primary {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    &:disabled { opacity: .5; cursor: not-allowed; }
+    &:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 20px -10px var(--accent); }
+  }
+
+  .btn-secondary {
+    padding: 0.85rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    &:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+  }
+
+  /* --- Toggle Groups --- */
+  .toggle-group {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.4rem;
+    border-radius: 10px;
+    .toggle-btn {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      border-radius: 7px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      &.active { background: rgba(var(--accent-r), 0.8); color: white; }
+      &.income.active { background: #00f2fe; color: white; }
+    }
+  }
+
+  /* --- Modal System --- */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .modal-content {
+      width: 90%;
+      max-width: 600px;
+      padding: 2.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        h2 { margin: 0; font-size: 1.5rem; }
+        .close-btn { background: transparent; border: none; color: white; font-size: 1.25rem; cursor: pointer; opacity: 0.5; &:hover { opacity: 1; } }
+      }
+      .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
+    }
+  }
+
+  /* --- Custom Select --- */
+  .custom-select-container {
+    position: relative;
+    .select-trigger {
+      background: rgba(0, 0, 0, .2);
+      border: 1px solid var(--card-border);
+      padding: 1rem;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, .4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      &.has-value { color: white; }
+      .selection { display: flex; align-items: center; gap: 0.75rem; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; }
+      .chevron { font-size: 0.7rem; opacity: 0.5; }
+    }
+    .select-options {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      width: 100%;
+      z-index: 4000;
+      max-height: 250px;
+      overflow-y: auto;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 0.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      .option {
+        padding: 0.75rem 0.8rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        cursor: pointer;
+        &:hover { background: rgba(255, 255, 255, 0.1); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .name { font-size: 0.95rem; color: white; }
+      }
+    }
+  }
+
+  /* --- Checkboxes --- */
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    input { display: none; }
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    input:checked + .checkmark {
+      background: var(--accent);
+      border-color: var(--accent);
+      &::after { content: '✓'; color: white; font-size: 12px; }
+    }
+    .label-text { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255, 255, 255, 0.5);
+    .icon { font-size: 4rem; margin-bottom: 1rem; opacity: .5; }
+  }
 }

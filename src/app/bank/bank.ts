@@ -2,7 +2,7 @@ import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { StateService } from '../services/state.service';
+import { StateService, getRandomColor } from '../services/state.service';
 
 @Component({
   selector: 'app-bank',
@@ -14,6 +14,8 @@ import { StateService } from '../services/state.service';
 export class BankComponent {
   newBankName = '';
   newBankCapital: number | null = null;
+  newBankColor = getRandomColor();
+  editingId: string | null = null;
   
   banks = computed(() => this.stateService.state().banks);
 
@@ -24,17 +26,54 @@ export class BankComponent {
 
   addBank() {
     if (this.newBankName && this.newBankCapital !== null) {
-      this.stateService.addBank({
-        name: this.newBankName,
-        initialCapital: this.newBankCapital
-      });
-      this.newBankName = '';
-      this.newBankCapital = null;
+      if (this.editingId) {
+        const bank = this.banks().find(b => b.id === this.editingId);
+        if (bank && bank.initialCapital !== this.newBankCapital) {
+          if (!confirm('Warning: Changing the initial capital will affect your total balance and historical calculations on the dashboard. Do you want to continue?')) {
+            return;
+          }
+        }
+        this.stateService.updateBank(this.editingId, {
+          name: this.newBankName,
+          initialCapital: this.newBankCapital,
+          color: this.newBankColor
+        });
+      } else {
+        this.stateService.addBank({
+          name: this.newBankName,
+          initialCapital: this.newBankCapital,
+          color: this.newBankColor
+        });
+      }
+      this.resetForm();
     }
   }
 
+  editBank(id: string) {
+    const bank = this.banks().find(b => b.id === id);
+    if (bank) {
+      this.editingId = id;
+      this.newBankName = bank.name;
+      this.newBankCapital = bank.initialCapital;
+      this.newBankColor = bank.color || getRandomColor();
+      // Scroll to form
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  private resetForm() {
+    this.editingId = null;
+    this.newBankName = '';
+    this.newBankCapital = null;
+    this.newBankColor = getRandomColor();
+  }
+
   deleteBank(id: string) {
-    if (confirm('Are you sure you want to remove this bank?')) {
+    if (confirm('Are you sure you want to remove this bank? This will affect your total balance and historical transactions associated with this account. This action cannot be undone. Do you want to continue?')) {
       this.stateService.deleteBank(id);
     }
   }
