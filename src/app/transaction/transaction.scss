@@ -62,7 +62,8 @@ $c: #00f2fe;
       .form-group { flex: 1; }
       &.full-width { width: 100%; flex-direction: column; }
     }
-    .auto-time-field { justify-content: flex-end; padding-bottom: 0.5rem; }
+    .auto-time-row { margin-top: -0.5rem; margin-bottom: 1.5rem; }
+    .auto-time-field { justify-content: flex-start; padding-bottom: 0.5rem; }
     .opt-group { margin-bottom: 0.5rem; }
     .group-label { padding: 0.6rem 0.8rem; font-size: 0.7rem; color: rgba(255, 255, 255, 0.3); text-transform: uppercase; }
   }
