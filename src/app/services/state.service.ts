@@ -43,7 +43,7 @@ export interface Category {
   id: string;
   name: string;
   color?: string;
-  type?: 'income' | 'expense';
+  type?: 'income' | 'expense' | 'others-in' | 'others-out';
 }
 
 export interface Transaction {
@@ -51,7 +51,7 @@ export interface Transaction {
   date: string;
   time?: string;  // HH:mm — optional, for display purposes
   amount: number;
-  type: 'income' | 'expense';
+  type: 'income' | 'expense' | 'others-in' | 'others-out';
   accountType: 'bank' | 'card' | 'cash' | 'others' | 'wallet';
   accountId: string;
   categoryId: string;
@@ -89,36 +89,42 @@ export class StateService {
     wallets: [],
     cards: [],
     categories: [
-      // Income Categories (Greens, Teals, Emeralds)
-      // Income Categories (Refined Green & Teal Palette)
-      { id: generateUUID(), name: 'Adjustment', color: '#64748B', type: 'income' }, // Slate Gray (neutral for adjustments)
-      { id: generateUUID(), name: 'Bank In', color: '#22C55E', type: 'income' },    // Bright Green
-      { id: generateUUID(), name: 'Bonus', color: '#FCD34D', type: 'income' },      // Gold/Amber (for special earnings)
-      { id: generateUUID(), name: 'Dividend', color: '#10B981', type: 'income' },   // Emerald
-      { id: generateUUID(), name: 'Fixed Deposit', color: '#065F46', type: 'income' }, // Forest Green
-      { id: generateUUID(), name: 'Others', color: '#94A3B8', type: 'income' },     // Light Slate
-      { id: generateUUID(), name: 'Passive', color: '#0EA5E9', type: 'income' },    // Sky Blue (to differentiate from active work)
-      { id: generateUUID(), name: 'Share Profit', color: '#0D9488', type: 'income' }, // Teal
-      { id: generateUUID(), name: 'Top up', color: '#84CC16', type: 'income' },     // Lime Green
+      // --- INCOME (True Wealth Increase) ---
+      { id: generateUUID(), name: 'Salary', color: '#22C55E', type: 'income' },
+      { id: generateUUID(), name: 'Dividend Gain', color: '#10B981', type: 'income' },
+      { id: generateUUID(), name: 'Investment Profit', color: '#0D9488', type: 'income' },
+      { id: generateUUID(), name: 'Rental Income', color: '#0EA5E9', type: 'income' },
+      { id: generateUUID(), name: 'Others (Income)', color: '#94A3B8', type: 'income' },
 
-      // Expense Categories (Diverse palette for categorization)
-      { id: generateUUID(), name: 'Adjustment', color: '#6B7280', type: 'expense' }, // Gray
-      { id: generateUUID(), name: 'Bank Withdrawal', color: '#EF4444', type: 'expense' }, // Red
-      { id: generateUUID(), name: 'Bills', color: '#3B82F6', type: 'expense' }, // Blue
-      { id: generateUUID(), name: 'Credit Card', color: '#1E40AF', type: 'expense' }, // Dark Blue
-      { id: generateUUID(), name: 'Entertainment', color: '#8B5CF6', type: 'expense' }, // Violet
-      { id: generateUUID(), name: 'Fixed Deposit', color: '#065F46', type: 'income' }, // Forest Green
-      { id: generateUUID(), name: 'Food and Drink', color: '#F97316', type: 'expense' }, // Orange
-      { id: generateUUID(), name: 'Grocery', color: '#F59E0B', type: 'expense' }, // Amber
-      { id: generateUUID(), name: 'Health and Medical', color: '#EC4899', type: 'expense' }, // Pink
-      { id: generateUUID(), name: 'Investment', color: '#6366F1', type: 'expense' }, // Indigo
-      { id: generateUUID(), name: 'Others', color: '#9CA3AF', type: 'expense' }, // Light Gray
-      { id: generateUUID(), name: 'Petrol', color: '#B45309', type: 'expense' }, // Brown/Amber
-      { id: generateUUID(), name: 'Scheduled and Recurring', color: '#7C3AED', type: 'expense' }, // Purple
-      { id: generateUUID(), name: 'Travel', color: '#06B6D4', type: 'expense' }, // Cyan
-      { id: generateUUID(), name: 'Treats', color: '#D946EF', type: 'expense' }, // Fuchsia
-      { id: generateUUID(), name: 'Wallet Top Up', color: '#F43F5E', type: 'expense' }, // Rose
-      { id: generateUUID(), name: 'Work', color: '#4B5563', type: 'expense' }  // Slate
+      // --- EXPENSES (True Wealth Decrease) ---
+      { id: generateUUID(), name: 'Food & Drink', color: '#F97316', type: 'expense' },
+      { id: generateUUID(), name: 'Grocery', color: '#F59E0B', type: 'expense' },
+      { id: generateUUID(), name: 'Bills & Utilities', color: '#3B82F6', type: 'expense' },
+      { id: generateUUID(), name: 'Petrol & Transport', color: '#B45309', type: 'expense' },
+      { id: generateUUID(), name: 'Toll', color: '#B45309', type: 'expense' },
+      { id: generateUUID(), name: 'Health & Medical', color: '#EC4899', type: 'expense' },
+      { id: generateUUID(), name: 'Entertainment', color: '#8B5CF6', type: 'expense' },
+      { id: generateUUID(), name: 'Travel', color: '#06B6D4', type: 'expense' },
+      { id: generateUUID(), name: 'Work Expenses', color: '#4B5563', type: 'expense' },
+      { id: generateUUID(), name: 'Others (Expense)', color: '#9CA3AF', type: 'expense' },
+
+      // --- TRANSFERS (Moving Money) ---
+      // Math: "In" adds to account, "Out" subtracts. Net impact on net worth: 0.
+      { id: generateUUID(), name: 'Transfer (In)', color: '#6366F1', type: 'others-in' },
+      { id: generateUUID(), name: 'Transfer (Out)', color: '#4338CA', type: 'others-out' },
+      { id: generateUUID(), name: 'Bank Withdrawal', color: '#64748B', type: 'others-out' },
+      { id: generateUUID(), name: 'Credit Card Payment', color: '#1E40AF', type: 'others-out' },
+
+      // --- ASSET REALLOCATION ---
+      { id: generateUUID(), name: 'Investment (In)', color: '#14B8A6', type: 'others-in' },
+      { id: generateUUID(), name: 'Investment (Out)', color: '#0F766E', type: 'others-out' },
+      { id: generateUUID(), name: 'Fixed Deposit (In)', color: '#059669', type: 'others-in' },
+      { id: generateUUID(), name: 'Fixed Deposit (Out)', color: '#047857', type: 'others-out' },
+
+      // --- ADJUSTMENTS (Syncing Balances) ---
+      // Used to manually fix account balances to match real life
+      { id: generateUUID(), name: 'Adjustment (In)', color: '#94A3B8', type: 'others-in' },
+      { id: generateUUID(), name: 'Adjustment (Out)', color: '#475569', type: 'others-out' }
     ],
     transactions: []
   };
@@ -266,7 +272,7 @@ export class StateService {
   }
 
   // --- Categories ---
-  addCategory(name: string, color?: string, type?: 'income' | 'expense') {
+  addCategory(name: string, color?: string, type?: 'income' | 'expense' | 'others-in' | 'others-out') {
     const current = this.state();
     const newCategory: Category = { id: generateUUID(), name, color, type };
     const categories = [...(current.categories || []), newCategory].sort((a, b) => a.name.localeCompare(b.name));

@@ -13,7 +13,7 @@ import { StateService, Transaction } from '../services/state.service';
 })
 export class TransactionComponent {
   // Form fields
-  newType = signal<'income' | 'expense'>('expense');
+  newType = signal<'income' | 'expense' | 'others-in' | 'others-out'>('expense');
   newDate = new Date().toISOString().split('T')[0];
   newTime = new Date().toTimeString().slice(0, 5); // HH:mm
   autoTime = true; // auto-fill current time on submit
@@ -26,7 +26,7 @@ export class TransactionComponent {
   filterText = '';
   filterCombinedAccount = '';
   filterCategoryId = '';
-  filterType = ''; // '' | 'income' | 'expense'
+  filterType = ''; // '' | 'income' | 'expense' | 'others-in' | 'others-out'
   filterMonth = signal<Date>(new Date());
   showAddForm = false;
   editingTransactionId: string | null = null;
@@ -66,7 +66,7 @@ export class TransactionComponent {
     this.showCategoryDropdown = false;
   }
 
-  newTypeToggle(type: 'income' | 'expense') {
+  newTypeToggle(type: 'income' | 'expense' | 'others-in' | 'others-out') {
     this.newType.set(type);
     this.newCategoryId = ''; // Reset category when type changes
   }
@@ -364,7 +364,7 @@ export class TransactionComponent {
       this.stateService.addTransaction({
         date,
         amount,
-        type: type as 'income' | 'expense',
+        type: type as 'income' | 'expense' | 'others-in' | 'others-out',
         accountType: parsedAccType,
         accountId: accId,
         categoryId: categoryId,

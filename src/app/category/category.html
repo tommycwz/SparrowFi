@@ -39,6 +39,8 @@
           <select id="categoryType" [(ngModel)]="newCategoryType" name="categoryType" required>
             <option value="expense">Expense</option>
             <option value="income">Income</option>
+            <option value="others-in">Others (In)</option>
+            <option value="others-out">Others (Out)</option>
           </select>
         </div>
         <div style="display: flex; gap: 1rem;">
@@ -60,15 +62,21 @@
         <button class="tab-btn" [class.active]="activeTab === 'expense'" (click)="activeTab = 'expense'">
           Expenses ({{ expenseCategories().length }})
         </button>
+        <button class="tab-btn" [class.active]="activeTab === 'others-in'" (click)="activeTab = 'others-in'">
+          Others In ({{ othersInCategories().length }})
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'others-out'" (click)="activeTab = 'others-out'">
+          Others Out ({{ othersOutCategories().length }})
+        </button>
       </div>
       
-      <div class="empty-state" *ngIf="(activeTab === 'expense' ? expenseCategories().length : incomeCategories().length) === 0">
+      <div class="empty-state" *ngIf="(activeTab === 'expense' ? expenseCategories().length : activeTab === 'income' ? incomeCategories().length : activeTab === 'others-in' ? othersInCategories().length : othersOutCategories().length) === 0">
         <div class="icon">🏷️</div>
         <p>No {{ activeTab }} categories found.</p>
       </div>
 
       <div class="data-items">
-        <div class="data-item" *ngFor="let cat of (activeTab === 'expense' ? expenseCategories() : incomeCategories())">
+        <div class="data-item" *ngFor="let cat of (activeTab === 'expense' ? expenseCategories() : activeTab === 'income' ? incomeCategories() : activeTab === 'others-in' ? othersInCategories() : othersOutCategories())">
           <div class="data-info">
             <span class="color-dot" [style.background-color]="cat.color || '#888'"></span>
             <h3>{{ cat.name }}</h3>

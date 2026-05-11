@@ -64,6 +64,8 @@
               <div class="toggle-group">
                 <button type="button" class="toggle-btn" [class.active]="newType() === 'expense'" (click)="newTypeToggle('expense')">Expense</button>
                 <button type="button" class="toggle-btn income" [class.active]="newType() === 'income'" (click)="newTypeToggle('income')">Income</button>
+                <button type="button" class="toggle-btn" [class.active]="newType() === 'others-in'" (click)="newTypeToggle('others-in')">Others (In)</button>
+                <button type="button" class="toggle-btn" [class.active]="newType() === 'others-out'" (click)="newTypeToggle('others-out')">Others (Out)</button>
               </div>
             </div>
             <div class="form-group">
@@ -177,6 +179,8 @@
         <option value="">All Types</option>
         <option value="income">Income</option>
         <option value="expense">Expense</option>
+        <option value="others-in">Others (In)</option>
+        <option value="others-out">Others (Out)</option>
       </select>
       <select [(ngModel)]="filterCategoryId">
         <option value="">All Categories</option>
@@ -213,7 +217,7 @@
         </div>
 
         <div class="row-amount" [ngClass]="t.type">
-          <span class="sign">{{ t.type === 'expense' ? '-' : '+' }}</span>
+          <span class="sign">{{ (t.type === 'expense' || t.type === 'others-out') ? '-' : '+' }}</span>
           <span class="currency">{{ stateService.currencySymbol() }}</span>
           <span class="value">{{ t.amount | number:'1.2-2' }}</span>
         </div>

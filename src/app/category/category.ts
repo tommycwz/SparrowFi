@@ -13,13 +13,15 @@ import { StateService, getRandomColor } from '../services/state.service';
 export class CategoryComponent {
   newCategoryName = '';
   newCategoryColor = getRandomColor();
-  newCategoryType: 'income' | 'expense' = 'expense';
-  activeTab: 'income' | 'expense' = 'income';
+  newCategoryType: 'income' | 'expense' | 'others-in' | 'others-out' = 'expense';
+  activeTab: 'income' | 'expense' | 'others-in' | 'others-out' = 'income';
   editingId: string | null = null;
   
   categories = computed(() => this.stateService.state().categories || []);
   incomeCategories = computed(() => this.categories().filter(c => c.type === 'income'));
   expenseCategories = computed(() => this.categories().filter(c => c.type === 'expense'));
+  othersInCategories = computed(() => this.categories().filter(c => c.type === 'others-in'));
+  othersOutCategories = computed(() => this.categories().filter(c => c.type === 'others-out'));
 
   constructor(public stateService: StateService) {}
 
