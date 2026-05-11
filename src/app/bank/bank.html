@@ -22,7 +22,7 @@
         </div>
         <div class="form-group">
           <label for="bankColor">Bank Color</label>
-          <input type="color" id="bankColor" [(ngModel)]="newBankColor" name="bankColor" style="height: 45px; cursor: pointer; padding: 5px;" required>
+          <input type="color" id="bankColor" [(ngModel)]="newBankColor" name="bankColor" required>
         </div>
         <div style="display: flex; gap: 1rem;">
           <button type="submit" class="btn-primary" [disabled]="!newBankName || newBankCapital === null" style="flex: 2;">
