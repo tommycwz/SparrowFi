@@ -12,6 +12,9 @@ import { StateService, Transaction } from '../services/state.service';
   providers: [DecimalPipe]
 })
 export class TransactionComponent {
+
+  protected readonly Math = Math;
+
   // Form fields
   newType = signal<'income' | 'expense' | 'others-in' | 'others-out'>('expense');
   newDate = new Date().toISOString().split('T')[0];
@@ -80,7 +83,7 @@ export class TransactionComponent {
   banks = computed(() => this.stateService.state().banks || []);
   cards = computed(() => this.stateService.state().cards || []);
   wallets = computed(() => this.stateService.state().wallets || []);
-  
+
   // Flattened categories for easier selection
   // Filtered categories based on selected transaction type
   filteredCategories = computed(() => {
@@ -101,14 +104,16 @@ export class TransactionComponent {
       .reduce((sum, t) => sum + t.amount, 0);
   });
 
+  netBalance = computed(() => this.monthlyIncome() - this.monthlyExpense());
+
   // Filtered transactions
   transactions = computed(() => {
     let list = this.stateService.state().transactions || [];
-    
+
     // Filter by Month
     const filterYear = this.filterMonth().getFullYear();
     const filterMonthIndex = this.filterMonth().getMonth();
-    
+
     list = list.filter(t => {
       const d = new Date(t.date);
       return d.getFullYear() === filterYear && d.getMonth() === filterMonthIndex;
@@ -122,21 +127,26 @@ export class TransactionComponent {
       const lower = this.filterText.toLowerCase();
       list = list.filter(t => t.notes.toLowerCase().includes(lower));
     }
-    
+
     if (this.filterCombinedAccount) {
       const [accType, accId] = this.filterCombinedAccount.split(':');
       list = list.filter(t => t.accountType === accType && (accType === 'cash' || accType === 'others' || t.accountId === accId));
     }
-    
+
     if (this.filterCategoryId) {
       list = list.filter(t => t.categoryId === this.filterCategoryId);
     }
-    
+
     // Sort by date descending
-    return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return [...list].sort((a, b) => {
+      const dateTimeA = new Date(`${a.date}T${a.time || '00:00'}`).getTime();
+      const dateTimeB = new Date(`${b.date}T${b.time || '00:00'}`).getTime();
+
+      return dateTimeB - dateTimeA;
+    });
   });
 
-  constructor(public stateService: StateService) {}
+  constructor(public stateService: StateService) { }
 
   previousMonth() {
     const current = this.filterMonth();
@@ -296,18 +306,18 @@ export class TransactionComponent {
     if (lines.length <= 1) return;
 
     let importedCount = 0;
-    
+
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-      
+
       const row: string[] = [];
       let currentVal = '';
       let inQuotes = false;
-      
+
       for (let j = 0; j < line.length; j++) {
         const char = line[j];
-        if (char === '"' && line[j+1] === '"') {
+        if (char === '"' && line[j + 1] === '"') {
           currentVal += '"';
           j++;
         } else if (char === '"') {
@@ -320,7 +330,7 @@ export class TransactionComponent {
         }
       }
       row.push(currentVal);
-      
+
       if (row.length < 7) continue;
 
       const [date, type, amountStr, accountType, accountName, categoryName, notes] = row;
@@ -344,7 +354,7 @@ export class TransactionComponent {
       let accId = '';
       let parsedAccType: 'bank' | 'card' | 'cash' | 'others' | 'wallet' = accountType as any;
       const cleanAccName = accountName.replace(/^"|"$/g, '');
-      
+
       if (parsedAccType === 'bank') {
         const b = this.banks().find(x => x.name.toLowerCase() === cleanAccName.toLowerCase());
         accId = b ? b.id : 'unknown';
@@ -372,7 +382,7 @@ export class TransactionComponent {
       });
       importedCount++;
     }
-    
+
     alert(`Successfully imported ${importedCount} transactions!`);
   }
 }
