@@ -183,18 +183,40 @@
   <!-- 5. List Section -->
   <div class="list-section">
     <div class="list-filters glass-card">
-      <input type="text" [(ngModel)]="filterText" placeholder="Search by notes..." class="search-input">
-      <select [(ngModel)]="filterType">
-        <option value="">All Types</option>
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-        <option value="others-in">Others (In)</option>
-        <option value="others-out">Others (Out)</option>
-      </select>
-      <select [(ngModel)]="filterCategoryId">
-        <option value="">All Categories</option>
-        <option *ngFor="let cat of stateService.state().categories" [value]="cat.id">{{ cat.name }}</option>
-      </select>
+      <div class="filter-row search-row">
+        <!-- FIXED: signal-based two-way binding for search -->
+        <input type="text" [ngModel]="filterText()" (ngModelChange)="filterText.set($event)"
+          placeholder="🔍  Search by notes..." class="search-input">
+      </div>
+      <div class="filter-row dropdown-row">
+        <!-- FIXED: signal-based two-way binding for all dropdowns -->
+        <select [ngModel]="filterType()" (ngModelChange)="filterType.set($event)">
+          <option value="">All Types</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+          <option value="others-in">Others (In)</option>
+          <option value="others-out">Others (Out)</option>
+        </select>
+        <select [ngModel]="filterCombinedAccount()" (ngModelChange)="filterCombinedAccount.set($event)">
+          <option value="">All Accounts</option>
+          <optgroup label="Banks" *ngIf="banks().length > 0">
+            <option *ngFor="let b of banks()" [value]="'bank:' + b.id">{{ b.name }}</option>
+          </optgroup>
+          <optgroup label="Wallets" *ngIf="wallets().length > 0">
+            <option *ngFor="let w of wallets()" [value]="'wallet:' + w.id">{{ w.name }}</option>
+          </optgroup>
+          <optgroup label="Cards" *ngIf="cards().length > 0">
+            <option *ngFor="let c of cards()" [value]="'card:' + c.id">{{ c.name }}</option>
+          </optgroup>
+        </select>
+        <select [ngModel]="filterCategoryId()" (ngModelChange)="filterCategoryId.set($event)">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of stateService.state().categories" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+        <button type="button" class="btn-reset"
+          *ngIf="filterText() || filterType() || filterCombinedAccount() || filterCategoryId()"
+          (click)="resetFilters()">✕ Reset</button>
+      </div>
     </div>
 
     <div class="transactions-list">
@@ -219,7 +241,6 @@
               <span class="dot" [style.background-color]="getAccountColor(t.accountType, t.accountId)"></span>
               {{ getAccountName(t.accountType, t.accountId) }}
             </span>
-            <!-- <span class="time" *ngIf="t.time">{{ t.time }}</span> -->
             <span class="time" *ngIf="t.time">
               {{ '1970-01-01T' + t.time | date:'h:mm a' }}
             </span>

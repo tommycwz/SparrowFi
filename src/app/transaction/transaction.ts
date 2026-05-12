@@ -18,18 +18,18 @@ export class TransactionComponent {
   // Form fields
   newType = signal<'income' | 'expense' | 'others-in' | 'others-out'>('expense');
   newDate = new Date().toISOString().split('T')[0];
-  newTime = new Date().toTimeString().slice(0, 5); // HH:mm
+  newTime = new Date().toTimeString().slice(0, 8); // HH:mm:ss
   autoTime = true; // auto-fill current time on submit
   newAmount: number | null = null;
   newCombinedAccount = ''; // Format: "type:id" (e.g. "bank:uuid", "cash:cash")
   newCategoryId = '';
   newNotes = '';
 
-  // Filter fields
-  filterText = '';
-  filterCombinedAccount = '';
-  filterCategoryId = '';
-  filterType = ''; // '' | 'income' | 'expense' | 'others-in' | 'others-out'
+  // Filter fields — FIXED: converted to signals for reactivity
+  filterText = signal('');
+  filterCombinedAccount = signal('');
+  filterCategoryId = signal('');
+  filterType = signal<'income' | 'expense' | 'others-in' | 'others-out' | ''>('');
   filterMonth = signal<Date>(new Date());
   showAddForm = false;
   editingTransactionId: string | null = null;
@@ -106,7 +106,7 @@ export class TransactionComponent {
 
   netBalance = computed(() => this.monthlyIncome() - this.monthlyExpense());
 
-  // Filtered transactions
+  // Filtered transactions — FIXED: all filters now read signal values
   transactions = computed(() => {
     let list = this.stateService.state().transactions || [];
 
@@ -119,28 +119,32 @@ export class TransactionComponent {
       return d.getFullYear() === filterYear && d.getMonth() === filterMonthIndex;
     });
 
-    if (this.filterType) {
-      list = list.filter(t => t.type === this.filterType);
+    // Filter by Type
+    if (this.filterType()) {
+      list = list.filter(t => t.type === this.filterType());
     }
 
-    if (this.filterText) {
-      const lower = this.filterText.toLowerCase();
-      list = list.filter(t => t.notes.toLowerCase().includes(lower));
+    // Filter by Text — FIXED: added optional chaining for notes
+    if (this.filterText()) {
+      const lower = this.filterText().toLowerCase();
+      list = list.filter(t => t.notes?.toLowerCase().includes(lower));
     }
 
-    if (this.filterCombinedAccount) {
-      const [accType, accId] = this.filterCombinedAccount.split(':');
+    // Filter by Account
+    if (this.filterCombinedAccount()) {
+      const [accType, accId] = this.filterCombinedAccount().split(':');
       list = list.filter(t => t.accountType === accType && (accType === 'cash' || accType === 'others' || t.accountId === accId));
     }
 
-    if (this.filterCategoryId) {
-      list = list.filter(t => t.categoryId === this.filterCategoryId);
+    // Filter by Category
+    if (this.filterCategoryId()) {
+      list = list.filter(t => t.categoryId === this.filterCategoryId());
     }
 
-    // Sort by date descending
+    // Sort by date+time descending (second precision)
     return [...list].sort((a, b) => {
-      const dateTimeA = new Date(`${a.date}T${a.time || '00:00'}`).getTime();
-      const dateTimeB = new Date(`${b.date}T${b.time || '00:00'}`).getTime();
+      const dateTimeA = new Date(`${a.date}T${a.time || '00:00:00'}`).getTime();
+      const dateTimeB = new Date(`${b.date}T${b.time || '00:00:00'}`).getTime();
 
       return dateTimeB - dateTimeA;
     });
@@ -163,7 +167,7 @@ export class TransactionComponent {
 
       const [accType, accId] = this.newCombinedAccount.split(':');
       const resolvedTime = this.autoTime
-        ? new Date().toTimeString().slice(0, 5)
+        ? new Date().toTimeString().slice(0, 8)
         : this.newTime;
 
       const transactionData = {
@@ -206,6 +210,13 @@ export class TransactionComponent {
     this.resetForm();
   }
 
+  resetFilters() {
+    this.filterText.set('');
+    this.filterType.set('');
+    this.filterCombinedAccount.set('');
+    this.filterCategoryId.set('');
+  }
+
   private resetForm() {
     this.editingTransactionId = null;
     this.newAmount = null;
@@ -214,7 +225,7 @@ export class TransactionComponent {
     this.newCategoryId = '';
     this.showAddForm = false;
     if (this.autoTime) {
-      this.newTime = new Date().toTimeString().slice(0, 5);
+      this.newTime = new Date().toTimeString().slice(0, 8);
     }
   }
 

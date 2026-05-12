@@ -301,17 +301,37 @@ export class StateService {
   updateBank(id: string, bank: Partial<Bank>) {
     let current = this.state();
     const oldBank = current.banks.find(b => b.id === id);
-    
+
     // First update the bank details
     this.state.set({
       ...current,
       banks: current.banks.map(b => b.id === id ? { ...b, ...bank } : b)
     });
 
-    // Then add the adjustment transaction if needed
+    // Then update the Initial balance transaction instead of adding a diff
     if (oldBank && bank.initialCapital !== undefined && Number(bank.initialCapital) !== Number(oldBank.initialCapital)) {
-      const diff = Number(bank.initialCapital) - Number(oldBank.initialCapital);
-      this.addAdjustmentTransaction('bank', id, diff, 'Capital adjustment');
+      current = this.state();
+      const newCapital = Number(bank.initialCapital);
+      const initTx = (current.transactions || []).find(t =>
+        t.accountType === 'bank' && t.accountId === id && t.notes === 'Initial balance'
+      );
+      if (initTx) {
+        if (newCapital === 0) {
+          this.state.set({
+            ...current,
+            transactions: (current.transactions || []).filter(t => t.id !== initTx.id)
+          });
+        } else {
+          this.state.set({
+            ...current,
+            transactions: (current.transactions || []).map(t =>
+              t.id === initTx.id ? { ...t, amount: newCapital, type: 'others-in' as const } : t
+            )
+          });
+        }
+      } else if (newCapital !== 0) {
+        this.addAdjustmentTransaction('bank', id, newCapital, 'Initial balance');
+      }
     }
 
     this.isDirty.set(true);
@@ -356,10 +376,30 @@ export class StateService {
       wallets: (current.wallets || []).map(w => w.id === id ? { ...w, ...wallet } : w)
     });
 
-    // Then add the adjustment transaction if needed
+    // Then update the Initial balance transaction instead of adding a diff
     if (oldWallet && wallet.initialCapital !== undefined && Number(wallet.initialCapital) !== Number(oldWallet.initialCapital)) {
-      const diff = Number(wallet.initialCapital) - Number(oldWallet.initialCapital);
-      this.addAdjustmentTransaction('wallet', id, diff, 'Balance adjustment');
+      current = this.state();
+      const newCapital = Number(wallet.initialCapital);
+      const initTx = (current.transactions || []).find(t =>
+        t.accountType === 'wallet' && t.accountId === id && t.notes === 'Initial balance'
+      );
+      if (initTx) {
+        if (newCapital === 0) {
+          this.state.set({
+            ...current,
+            transactions: (current.transactions || []).filter(t => t.id !== initTx.id)
+          });
+        } else {
+          this.state.set({
+            ...current,
+            transactions: (current.transactions || []).map(t =>
+              t.id === initTx.id ? { ...t, amount: newCapital, type: 'others-in' as const } : t
+            )
+          });
+        }
+      } else if (newCapital !== 0) {
+        this.addAdjustmentTransaction('wallet', id, newCapital, 'Initial balance');
+      }
     }
 
     this.isDirty.set(true);

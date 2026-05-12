@@ -29,7 +29,8 @@ export class BankComponent {
       if (this.editingId) {
         const bank = this.banks().find(b => b.id === this.editingId);
         if (bank && bank.initialCapital !== this.newBankCapital) {
-          if (!confirm('Warning: Changing the initial capital will affect your total balance and historical calculations on the dashboard. Do you want to continue?')) {
+          if (this.hasUserTransactions(this.editingId)) {
+            alert('Initial balance cannot be changed because this bank has existing transactions.');
             return;
           }
         }
@@ -76,6 +77,14 @@ export class BankComponent {
     if (confirm('Are you sure you want to remove this bank? This will affect your total balance and historical transactions associated with this account. This action cannot be undone. Do you want to continue?')) {
       this.stateService.deleteBank(id);
     }
+  }
+
+  hasUserTransactions(bankId: string): boolean {
+    const systemNotes = ['Initial balance', 'Capital adjustment', 'Balance adjustment', 'Account closure adjustment'];
+    const transactions = this.stateService.state().transactions || [];
+    return transactions.some(t =>
+      t.accountType === 'bank' && t.accountId === bankId && !systemNotes.includes(t.notes)
+    );
   }
 
   getBankBalance(bankId: string): number {

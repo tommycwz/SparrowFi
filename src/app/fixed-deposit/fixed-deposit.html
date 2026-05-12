@@ -94,7 +94,7 @@
               <div class="deposit-header">
                 <div class="bank-info">
                   <span class="bank-icon">🏦</span>
-                  <span class="bank-name">{{ getBankName(fd.bankId) }}</span>
+                  <span class="bank-name">{{ getBankName(fd.toBankId || fd.bankId) }}</span>
                 </div>
                 <div class="header-right">
                   <button class="btn-icon-action" (click)="editFixedDeposit(fd)" title="Edit"

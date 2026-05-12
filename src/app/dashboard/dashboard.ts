@@ -1,5 +1,6 @@
-import { Component, computed, AfterViewInit, OnDestroy, effect } from '@angular/core';
+import { Component, computed, AfterViewInit, OnDestroy, effect, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StateService } from '../services/state.service';
 import Chart from 'chart.js/auto';
@@ -7,7 +8,7 @@ import Chart from 'chart.js/auto';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   providers: [DecimalPipe]
@@ -53,6 +54,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       .sort((a, b) => new Date(`${b.date}T${b.time || '00:00'}`).getTime() - new Date(`${a.date}T${a.time || '00:00'}`).getTime())
       .slice(0, 5);
   });
+
+  chartMonth = signal<string>(new Date().toISOString().slice(0, 7)); // YYYY-MM
 
   private doughnutChart: Chart | null = null;
   private barChart: Chart | null = null;
@@ -143,9 +146,19 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     this.updateCharts();
   }
 
+  onChartMonthChange(val: string) {
+    this.chartMonth.set(val);
+    this.updateCharts();
+  }
+
   private updateCharts() {
-    const transactions = this.stateService.state().transactions || [];
+    const allTransactions = this.stateService.state().transactions || [];
     const categories = this.stateService.state().categories || [];
+    const month = this.chartMonth();
+
+    const transactions = month
+      ? allTransactions.filter(t => t.date.startsWith(month))
+      : allTransactions;
 
     const expensesByCategory: Record<string, number> = {};
     let totalIncome = 0;

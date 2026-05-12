@@ -29,7 +29,8 @@ export class WalletComponent {
       if (this.editingId) {
         const wallet = this.wallets().find(w => w.id === this.editingId);
         if (wallet && wallet.initialCapital !== this.newWalletCapital) {
-          if (!confirm('Warning: Changing the initial balance will affect your total balance and historical calculations on the dashboard. Do you want to continue?')) {
+          if (this.hasUserTransactions(this.editingId)) {
+            alert('Initial balance cannot be changed because this wallet has existing transactions.');
             return;
           }
         }
@@ -75,6 +76,14 @@ export class WalletComponent {
     if (confirm('Are you sure you want to remove this wallet? This will affect your total balance and historical transactions associated with this account. This action cannot be undone. Do you want to continue?')) {
       this.stateService.deleteWallet(id);
     }
+  }
+
+  hasUserTransactions(walletId: string): boolean {
+    const systemNotes = ['Initial balance', 'Capital adjustment', 'Balance adjustment', 'Account closure adjustment'];
+    const transactions = this.stateService.state().transactions || [];
+    return transactions.some(t =>
+      t.accountType === 'wallet' && t.accountId === walletId && !systemNotes.includes(t.notes)
+    );
   }
 
   getWalletBalance(walletId: string): number {

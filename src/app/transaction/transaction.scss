@@ -8,6 +8,7 @@ $r: #ff4b4b;
 $c: #00f2fe;
 
 .module-container {
+
   /* --- 1. Summary Bar --- */
   .summary-bar {
     display: flex;
@@ -15,18 +16,60 @@ $c: #00f2fe;
     align-items: center;
     padding: 1.5rem;
     margin-bottom: 2rem;
+
     .summary-item {
       text-align: center;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
-      .label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; letter-spacing: 1px; }
-      .value { font-size: 1.5rem; font-weight: 800; }
-      &.income .value { color: $c; }
-      &.expense .value { color: $r; }
-      &.balance .value { color: white; &.negative { color: $r; } }
+
+      .label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .value {
+        font-size: 1.5rem;
+        font-weight: 800;
+      }
+
+      &.income .value {
+        color: $c;
+      }
+
+      &.expense .value {
+        color: $r;
+      }
+
+      &.balance .value {
+        color: white;
+
+        &.negative {
+          color: $r;
+        }
+      }
     }
-    .summary-divider { width: 1px; height: 40px; background: rgba(255, 255, 255, 0.1); }
+
+    .summary-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* --- Header Actions (Import / Export) --- */
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      border-radius: 8px;
+    }
   }
 
   /* --- 2. Nav Actions Bar --- */
@@ -35,11 +78,20 @@ $c: #00f2fe;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+
     .month-selector {
       display: flex;
       align-items: center;
       gap: 1.5rem;
-      .current-month { font-size: 1.25rem; font-weight: 700; color: white; min-width: 140px; text-align: center; }
+
+      .current-month {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+        min-width: 140px;
+        text-align: center;
+      }
+
       .nav-btn {
         background: rgba(255, 255, 255, 0.05);
         border: none;
@@ -48,7 +100,10 @@ $c: #00f2fe;
         height: 36px;
         border-radius: 50%;
         cursor: pointer;
-        &:hover { background: $b; }
+
+        &:hover {
+          background: $b;
+        }
       }
     }
   }
@@ -59,31 +114,117 @@ $c: #00f2fe;
       display: flex;
       gap: 1.5rem;
       margin-bottom: 1rem;
-      .form-group { flex: 1; }
-      &.full-width { width: 100%; flex-direction: column; }
+
+      .form-group {
+        flex: 1;
+      }
+
+      &.full-width {
+        width: 100%;
+        flex-direction: column;
+      }
     }
-    .auto-time-row { margin-top: -0.5rem; margin-bottom: 1.5rem; }
-    .auto-time-field { justify-content: flex-start; padding-bottom: 0.5rem; }
-    .opt-group { margin-bottom: 0.5rem; }
-    .group-label { padding: 0.6rem 0.8rem; font-size: 0.7rem; color: rgba(255, 255, 255, 0.3); text-transform: uppercase; }
+
+    .auto-time-row {
+      margin-top: -0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .auto-time-field {
+      justify-content: flex-start;
+      padding-bottom: 0.5rem;
+    }
+
+    .opt-group {
+      margin-bottom: 0.5rem;
+    }
+
+    .group-label {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+    }
   }
 
   /* --- 4. Filters --- */
   .list-filters {
     display: flex;
-    gap: 1rem;
-    padding: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
     margin-bottom: 1.5rem;
     align-items: center;
-    .search-input { flex: 1; background: transparent; border: none; font-size: 1rem; color: white; &:focus { outline: none; } }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      &.search-row {
+        flex: 1;
+        min-width: 160px;
+      }
+
+      &.dropdown-row {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.78rem;
+      padding: 0.4rem 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+
+      &:hover {
+        background: rgba(255, 75, 75, 0.12);
+        border-color: rgba(255, 75, 75, 0.4);
+        color: #ff6b6b;
+      }
+    }
+
+    .search-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      font-size: 0.95rem;
+      color: white;
+
+      &:focus {
+        outline: none;
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+    }
+
     select {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.5rem 0.75rem;
+      padding: 0.45rem 0.75rem;
       border-radius: 8px;
       color: rgba(255, 255, 255, 0.7);
       font-size: 0.85rem;
-      option { background: #0f172a; color: white; }
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: rgba(79, 172, 254, 0.4);
+      }
+
+      option {
+        background: #0f172a;
+        color: white;
+      }
     }
   }
 
@@ -95,49 +236,108 @@ $c: #00f2fe;
     margin-bottom: 0.75rem;
     gap: 1.5rem;
     transition: all 0.3s;
-    &:hover { border-color: rgba(255, 255, 255, 0.15); transform: translateX(5px); }
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
     .row-date {
       display: flex;
       flex-direction: column;
       align-items: center;
       min-width: 45px;
-      .day { font-size: 1.4rem; font-weight: 800; color: white; line-height: 1; }
-      .month { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-top: 2px; }
+
+      .day {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1;
+      }
+
+      .month {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
     }
+
     .row-main {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+
       .item-meta {
         display: flex;
         align-items: center;
         gap: 1rem;
-        .category-tag, .account-tag {
+
+        .category-tag,
+        .account-tag {
           display: flex;
           align-items: center;
           gap: 0.5rem;
           font-size: 0.75rem;
           color: rgba(255, 255, 255, 0.5);
-          .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+          .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+          }
         }
-        .time { font-size: 0.7rem; color: $b; font-weight: 600; padding: 2px 6px; background: rgba(79, 172, 254, 0.1); border-radius: 4px; }
+
+        .time {
+          font-size: 0.7rem;
+          color: $b;
+          font-weight: 600;
+          padding: 2px 6px;
+          background: rgba(79, 172, 254, 0.1);
+          border-radius: 4px;
+        }
       }
-      .notes { font-size: 1rem; color: white; &.placeholder { opacity: 0.2; font-style: italic; font-size: 0.85rem; } }
+
+      .notes {
+        font-size: 1rem;
+        color: white;
+
+        &.placeholder {
+          opacity: 0.2;
+          font-style: italic;
+          font-size: 0.85rem;
+        }
+      }
     }
+
     .row-amount {
       display: flex;
       align-items: baseline;
       gap: 0.2rem;
       font-size: 1.25rem;
       font-weight: 700;
-      &.income, &.others-in { color: $c; }
-      &.expense, &.others-out { color: $r; }
-      .currency { font-size: 0.8rem; opacity: 0.7; }
+
+      &.income,
+      &.others-in {
+        color: $c;
+      }
+
+      &.expense,
+      &.others-out {
+        color: $r;
+      }
+
+      .currency {
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
     }
+
     .row-actions {
       display: flex;
       gap: 0.5rem;
+
       .btn-action {
         background: rgba(255, 255, 255, 0.05);
         border: none;
@@ -151,18 +351,53 @@ $c: #00f2fe;
         font-size: 0.85rem;
         opacity: 0;
         transition: all 0.2s;
-        &.edit:hover { background: rgba($b, 0.3); }
-        &.delete:hover { background: rgba($r, 0.3); }
-        &:hover { transform: scale(1.1); }
+
+        &.edit:hover {
+          background: rgba($b, 0.3);
+        }
+
+        &.delete:hover {
+          background: rgba($r, 0.3);
+        }
+
+        &:hover {
+          transform: scale(1.1);
+        }
       }
     }
-    &:hover .row-actions .btn-action { opacity: 1; }
+
+    &:hover .row-actions .btn-action {
+      opacity: 1;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .module-container {
-    .summary-bar { flex-direction: column; gap: 1rem; .summary-divider { display: none; } }
-    .transaction-row { flex-wrap: wrap; .row-amount { margin-left: auto; } .row-actions { width: 100%; text-align: right; .btn-action { opacity: 1; } } }
+    .summary-bar {
+      flex-direction: column;
+      gap: 1rem;
+
+      .summary-divider {
+        display: none;
+      }
+    }
+
+    .transaction-row {
+      flex-wrap: wrap;
+
+      .row-amount {
+        margin-left: auto;
+      }
+
+      .row-actions {
+        width: 100%;
+        text-align: right;
+
+        .btn-action {
+          opacity: 1;
+        }
+      }
+    }
   }
 }
