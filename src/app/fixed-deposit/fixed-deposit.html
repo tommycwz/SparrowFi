@@ -89,8 +89,10 @@
                   <span class="bank-name">{{ getBankName(fd.bankId) }}</span>
                 </div>
                 <div class="header-right">
-                  <button class="btn-icon-edit" (click)="editFixedDeposit(fd)" title="Edit"
+                  <button class="btn-icon-action" (click)="editFixedDeposit(fd)" title="Edit"
                     *ngIf="fd.status === 'active'">✏️</button>
+                  <button class="btn-icon-action" (click)="deleteFixedDeposit(fd.id)" title="Delete"
+                    *ngIf="fd.status !== 'active'">🗑️</button>
                   <div class="status-badge" [class.active]="fd.status === 'active'"
                     [class.done]="fd.status === 'matured'" [class.warning]="fd.status === 'withdrawn'">
                     {{ fd.status }}

@@ -124,6 +124,18 @@ export class FixedDepositComponent {
     this.resetForm();
   }
 
+  deleteFixedDeposit(id: string) {
+    const fd = this.fixedDeposits().find(f => f.id === id);
+    if (!fd || fd.status === 'active') {
+      alert('Active deposits cannot be deleted. Please withdraw or mature them first.');
+      return;
+    }
+    
+    if (confirm('Are you sure you want to delete this fixed deposit record? This will NOT automatically reverse any transactions.')) {
+      this.stateService.deleteFixedDeposit(id);
+    }
+  }
+
   matureFixedDeposit(fd: FixedDeposit) {
     if (confirm('Are you sure you want to mark this fixed deposit as matured? This will return the funds to your bank.')) {
       // Mark as matured

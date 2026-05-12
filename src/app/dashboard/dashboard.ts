@@ -14,17 +14,15 @@ import Chart from 'chart.js/auto';
 })
 export class DashboardComponent implements AfterViewInit, OnDestroy {
   totalCapital = computed(() => {
-    const banks = this.stateService.state().banks || [];
     const transactions = this.stateService.state().transactions || [];
-    
-    let total = banks.reduce((sum, bank) => sum + bank.initialCapital, 0);
+    let total = 0;
     const fixedDeposits = this.stateService.state().fixedDeposits || [];
     
     // Add active fixed deposits to total capital
     total += fixedDeposits.filter(fd => fd.status === 'active').reduce((sum, fd) => sum + fd.amount, 0);
     
     for (const t of transactions) {
-      if (t.accountType === 'bank') {
+      if (t.accountType === 'bank' || t.accountType === 'wallet') {
         if (t.type === 'income' || t.type === 'others-in') total += t.amount;
         if (t.type === 'expense' || t.type === 'others-out') total -= t.amount;
       }
@@ -32,13 +30,28 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     
     return total;
   });
-  
+    
   bankCount = computed(() => {
     return this.stateService.state().banks.length;
   });
 
+  walletCount = computed(() => {
+    return (this.stateService.state().wallets || []).length;
+  });
+
+  fixedDepositCount = computed(() => {
+    return (this.stateService.state().fixedDeposits || []).filter(fd => fd.status === 'active').length;
+  });
+
   cardCount = computed(() => {
     return (this.stateService.state().cards || []).length;
+  });
+
+  recentTransactions = computed(() => {
+    const list = this.stateService.state().transactions || [];
+    return [...list]
+      .sort((a, b) => new Date(`${b.date}T${b.time || '00:00'}`).getTime() - new Date(`${a.date}T${a.time || '00:00'}`).getTime())
+      .slice(0, 5);
   });
 
   private doughnutChart: Chart | null = null;
@@ -58,6 +71,34 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initCharts();
+  }
+
+  getCategoryColor(categoryId: string): string {
+    const cat = this.stateService.state().categories.find(c => c.id === categoryId);
+    return cat ? cat.color || '#888' : '#888';
+  }
+
+  getCategoryName(categoryId: string): string {
+    const cat = this.stateService.state().categories.find(c => c.id === categoryId);
+    return cat ? cat.name : 'Unknown';
+  }
+
+  getAccountName(type: string, id: string): string {
+    if (type === 'cash') return 'Cash';
+    if (type === 'others') return 'Others';
+    if (type === 'bank') {
+      const b = this.stateService.state().banks.find(x => x.id === id);
+      return b ? b.name : 'Bank';
+    }
+    if (type === 'card') {
+      const c = this.stateService.state().cards.find(x => x.id === id);
+      return c ? c.name : 'Card';
+    }
+    if (type === 'wallet') {
+      const w = this.stateService.state().wallets.find(x => x.id === id);
+      return w ? w.name : 'Wallet';
+    }
+    return 'Account';
   }
 
   ngOnDestroy() {

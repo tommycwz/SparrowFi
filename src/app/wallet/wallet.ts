@@ -81,7 +81,7 @@ export class WalletComponent {
     const wallet = this.wallets().find(w => w.id === walletId);
     if (!wallet) return 0;
 
-    let balance = wallet.initialCapital;
+    let balance = 0;
     const transactions = this.stateService.state().transactions || [];
 
     for (const t of transactions) {

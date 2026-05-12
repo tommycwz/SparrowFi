@@ -82,7 +82,7 @@ export class BankComponent {
     const bank = this.banks().find(b => b.id === bankId);
     if (!bank) return 0;
     
-    let balance = bank.initialCapital;
+    let balance = 0;
     const transactions = this.stateService.state().transactions || [];
     
     for (const t of transactions) {
