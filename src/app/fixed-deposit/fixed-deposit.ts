@@ -14,6 +14,7 @@ import { StateService, FixedDeposit } from '../services/state.service';
 })
 export class FixedDepositComponent {
   newBankId = '';
+  newToBankId = '';
   newStartDate = new Date().toISOString().split('T')[0];
   newAmount: number | null = null;
   newPercentage: number | null = null;
@@ -55,10 +56,11 @@ export class FixedDepositComponent {
   }
 
   createFixedDeposit() {
-    if (this.newBankId && this.newStartDate && this.newAmount !== null && this.newPercentage !== null && this.newMonths !== null) {
+    if (this.newBankId && this.newToBankId && this.newStartDate && this.newAmount !== null && this.newPercentage !== null && this.newMonths !== null) {
       if (this.editingId) {
         this.stateService.updateFixedDeposit(this.editingId, {
           bankId: this.newBankId,
+          toBankId: this.newToBankId,
           startDate: this.newStartDate,
           amount: this.newAmount,
           percentage: this.newPercentage,
@@ -68,6 +70,7 @@ export class FixedDepositComponent {
         // Create FD record
         const fdData: Omit<FixedDeposit, 'id'> = {
           bankId: this.newBankId,
+          toBankId: this.newToBankId,
           startDate: this.newStartDate,
           amount: this.newAmount,
           percentage: this.newPercentage,
@@ -103,6 +106,7 @@ export class FixedDepositComponent {
 
   resetForm() {
     this.newBankId = '';
+    this.newToBankId = '';
     this.newStartDate = new Date().toISOString().split('T')[0];
     this.newAmount = null;
     this.newPercentage = null;
@@ -113,6 +117,7 @@ export class FixedDepositComponent {
   editFixedDeposit(fd: FixedDeposit) {
     this.editingId = fd.id;
     this.newBankId = fd.bankId;
+    this.newToBankId = fd.toBankId || '';
     this.newStartDate = fd.startDate;
     this.newAmount = fd.amount;
     this.newPercentage = fd.percentage;
@@ -155,7 +160,7 @@ export class FixedDepositComponent {
         amount: fd.amount,
         type: 'others-in', // Returns to bank, so it adds to balance
         accountType: 'bank',
-        accountId: fd.bankId,
+        accountId: fd.toBankId || fd.bankId,
         categoryId: principalCatId,
         notes: `Fixed Deposit Matured (Principal)`
       });
@@ -170,7 +175,7 @@ export class FixedDepositComponent {
         amount: gain,
         type: 'income',
         accountType: 'bank',
-        accountId: fd.bankId,
+        accountId: fd.toBankId || fd.bankId,
         categoryId: profitCatId,
         notes: `Fixed Deposit Matured (Interest Gain)`
       });
@@ -193,7 +198,7 @@ export class FixedDepositComponent {
         amount: fd.amount,
         type: 'others-in', // Returns to bank
         accountType: 'bank',
-        accountId: fd.bankId,
+        accountId: fd.toBankId || fd.bankId,
         categoryId: principalCatId,
         notes: `Fixed Deposit Withdrawal (Principal Only)`
       });

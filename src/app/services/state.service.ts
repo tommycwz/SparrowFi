@@ -64,7 +64,8 @@ export interface Settings {
 
 export interface FixedDeposit {
   id: string;
-  bankId: string;
+  bankId: string; // Serves as 'From Bank'
+  toBankId?: string; // New field for 'To Bank'
   startDate: string;
   amount: number;
   percentage: number; // annual interest rate

@@ -26,22 +26,44 @@ $transition: 0.3s ease;
   left: 0;
   top: 0;
   z-index: 100;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: width $transition;
+
+  // Custom Scrollbar
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
 
   // ─── Collapsed state ───────────────────────────────────────────
   &.collapsed {
     width: $sidebar-collapsed-width;
 
-    .brand-name { 
+    .brand-name {
       opacity: 0;
       width: 0;
       visibility: hidden;
     }
-    
+
     .sidebar-header {
       justify-content: center;
-      .brand { gap: 0; }
+
+      .brand {
+        gap: 0;
+      }
     }
 
     .sidebar-nav .nav-item {
@@ -215,12 +237,16 @@ $transition: 0.3s ease;
     .btn-secondary {
       background: rgba(79, 172, 254, 0.1);
       color: #4facfe;
-      &:hover { background: rgba(79, 172, 254, 0.2); }
+
+      &:hover {
+        background: rgba(79, 172, 254, 0.2);
+      }
     }
 
     .btn-outline {
       border-color: rgba(255, 255, 255, 0.1);
       color: rgba(255, 255, 255, 0.6);
+
       &:hover {
         background: rgba(255, 255, 255, 0.05);
         color: white;
@@ -244,9 +270,17 @@ $transition: 0.3s ease;
 
 // ─── Animations ──────────────────────────────────────────────────
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.4); }
-  70%  { box-shadow: 0 0 0 10px rgba(79, 172, 254, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 172, 254, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(79, 172, 254, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
+  }
 }
 
 // ─── Auto-collapse on small screens ──────────────────────────────
