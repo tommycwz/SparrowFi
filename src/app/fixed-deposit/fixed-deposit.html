@@ -1,0 +1,145 @@
+<div class="module-container fixed-deposit-container">
+  <div class="module-header">
+    <div class="title-area">
+      <div>
+        <h1 class="page-title">Fixed Deposits</h1>
+        <p class="subtitle">Secure your future with <span>automated bank-linked savings</span></p>
+      </div>
+
+      <div class="form-notice">
+        <span class="icon">ℹ️</span>
+        <p>Placement will <span>auto-deduct</span> from the selected bank. On maturity, principal and gain are
+          <span>automatically returned</span> to the bank.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- Create FD Form -->
+    <div class="form-section">
+      <div class="glass-card">
+        <h2>{{ editingId ? 'Edit Placement' : 'New Placement' }}</h2>
+
+        <div class="data-form">
+          <div class="form-group">
+            <label>From Bank</label>
+            <select [(ngModel)]="newBankId">
+              <option value="" disabled selected>Select Bank</option>
+              <option *ngFor="let bank of banks()" [value]="bank.id">{{ bank.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" [(ngModel)]="newStartDate"
+              [attr.data-date]="(newStartDate | date:'dd/MM/yyyy') || 'dd/mm/yyyy'">
+          </div>
+
+          <div class="form-group">
+            <label>Principal Amount</label>
+            <div class="input-with-symbol">
+              <span class="symbol">{{ stateService.currencySymbol() }}</span>
+              <input type="number" [(ngModel)]="newAmount" placeholder="0.00" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Interest Rate (p.a.)</label>
+            <div class="input-with-symbol right-symbol">
+              <input type="number" [(ngModel)]="newPercentage" placeholder="0.00" step="0.01">
+              <span class="symbol">%</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Term (Months)</label>
+            <input type="number" [(ngModel)]="newMonths" placeholder="12" step="1" min="1">
+          </div>
+
+          <div class="projection-box glass-panel" *ngIf="newAmount && newPercentage && newMonths">
+            <div class="proj-label">Maturity Date: <span class="white">{{ getMaturityDatePreview() | date:'mediumDate'
+                }}</span></div>
+            <div class="proj-label">Projected Maturity Value:</div>
+            <div class="proj-value">{{ stateService.currencySymbol() }}{{ getProjectedAmount() | number:'1.2-2' }}</div>
+          </div>
+
+          <button class="btn-primary" (click)="createFixedDeposit()"
+            [disabled]="!newBankId || !newStartDate || !newAmount || !newPercentage || !newMonths">
+            <span>{{ editingId ? '💾' : '🔒' }}</span> {{ editingId ? 'Save Changes' : 'Place Deposit' }}
+          </button>
+
+          <button *ngIf="editingId" class="btn-secondary w-100 mt-2" (click)="cancelEdit()">
+            Cancel Edit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active FDs Section -->
+    <div class="list-section">
+      <div class="glass-card">
+        <h2>Active Deposits</h2>
+        <div class="deposits-grid">
+          <ng-container *ngIf="fixedDeposits().length > 0; else noDeposits">
+            <div class="deposit-card" *ngFor="let fd of fixedDeposits()" [class.matured]="fd.status !== 'active'">
+              <div class="deposit-header">
+                <div class="bank-info">
+                  <span class="bank-icon">🏦</span>
+                  <span class="bank-name">{{ getBankName(fd.bankId) }}</span>
+                </div>
+                <div class="header-right">
+                  <button class="btn-icon-edit" (click)="editFixedDeposit(fd)" title="Edit"
+                    *ngIf="fd.status === 'active'">✏️</button>
+                  <div class="status-badge" [class.active]="fd.status === 'active'"
+                    [class.done]="fd.status === 'matured'" [class.warning]="fd.status === 'withdrawn'">
+                    {{ fd.status }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="deposit-details">
+                <div class="detail-item">
+                  <span class="label">Start Date</span>
+                  <span class="value">{{ fd.startDate | date:'mediumDate' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Maturity Date</span>
+                  <span class="value">{{ getMaturityDate(fd) | date:'mediumDate' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Principal</span>
+                  <span class="value">{{ stateService.currencySymbol() }}{{ fd.amount | number:'1.2-2' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Term</span>
+                  <span class="value">{{ fd.months }} Months @ {{ fd.percentage }}%</span>
+                </div>
+                <div class="detail-item highlight">
+                  <span class="label">Proj. Maturity Value</span>
+                  <span class="value success">{{ stateService.currencySymbol() }}{{ getProjectedAmountFor(fd) |
+                    number:'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <div class="deposit-actions" *ngIf="fd.status === 'active'">
+                <button class="btn-primary mature-btn" (click)="matureFixedDeposit(fd)">
+                  Mark as Matured
+                </button>
+                <button class="btn-secondary withdraw-btn" (click)="withdrawFixedDeposit(fd)">
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noDeposits>
+            <div class="empty-state">
+              <div class="icon">🔒</div>
+              <p>No active fixed deposits. Create one to start growing your savings.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

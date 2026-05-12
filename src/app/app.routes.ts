@@ -13,6 +13,7 @@ export const routes: Routes = [
       { path: 'wallet', loadComponent: () => import('./wallet/wallet').then(m => m.WalletComponent) },
       { path: 'card', loadComponent: () => import('./card/card').then(m => m.CardComponent) },
       { path: 'category', loadComponent: () => import('./category/category').then(m => m.CategoryComponent) },
+      { path: 'fixed-deposit', loadComponent: () => import('./fixed-deposit/fixed-deposit').then(m => m.FixedDepositComponent) },
       { path: 'settings', loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) }
     ]
   },

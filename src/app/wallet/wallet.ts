@@ -86,8 +86,8 @@ export class WalletComponent {
 
     for (const t of transactions) {
       if (t.accountType === 'wallet' && t.accountId === walletId) {
-        if (t.type === 'income') balance += t.amount;
-        if (t.type === 'expense') balance -= t.amount;
+        if (t.type === 'income' || t.type === 'others-in') balance += t.amount;
+        if (t.type === 'expense' || t.type === 'others-out') balance -= t.amount;
       }
     }
 

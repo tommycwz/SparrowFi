@@ -18,11 +18,15 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     const transactions = this.stateService.state().transactions || [];
     
     let total = banks.reduce((sum, bank) => sum + bank.initialCapital, 0);
+    const fixedDeposits = this.stateService.state().fixedDeposits || [];
+    
+    // Add active fixed deposits to total capital
+    total += fixedDeposits.filter(fd => fd.status === 'active').reduce((sum, fd) => sum + fd.amount, 0);
     
     for (const t of transactions) {
       if (t.accountType === 'bank') {
-        if (t.type === 'income') total += t.amount;
-        if (t.type === 'expense') total -= t.amount;
+        if (t.type === 'income' || t.type === 'others-in') total += t.amount;
+        if (t.type === 'expense' || t.type === 'others-out') total -= t.amount;
       }
     }
     

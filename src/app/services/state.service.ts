@@ -62,6 +62,16 @@ export interface Settings {
   currency: string;
 }
 
+export interface FixedDeposit {
+  id: string;
+  bankId: string;
+  startDate: string;
+  amount: number;
+  percentage: number; // annual interest rate
+  months: number;
+  status: 'active' | 'matured' | 'withdrawn';
+}
+
 export interface AppState {
   user: {
     isNew: boolean;
@@ -73,6 +83,7 @@ export interface AppState {
   cards: Card[];
   categories: Category[];
   transactions: Transaction[];
+  fixedDeposits: FixedDeposit[];
   // Legacy support for older files
   creditCards?: any[];
   dropboxes?: any[];
@@ -126,7 +137,8 @@ export class StateService {
       { id: generateUUID(), name: 'Adjustment (In)', color: '#94A3B8', type: 'others-in' },
       { id: generateUUID(), name: 'Adjustment (Out)', color: '#475569', type: 'others-out' }
     ],
-    transactions: []
+    transactions: [],
+    fixedDeposits: []
   };
 
   // State signals
@@ -329,6 +341,29 @@ export class StateService {
 
   markClean() {
     this.isDirty.set(false);
+  }
+
+  // --- Fixed Deposits ---
+  addFixedDeposit(fd: Omit<FixedDeposit, 'id'>) {
+    const current = this.state();
+    const newFD: FixedDeposit = { ...fd, id: generateUUID() };
+    this.state.set({ ...current, fixedDeposits: [...(current.fixedDeposits || []), newFD] });
+    this.isDirty.set(true);
+  }
+
+  updateFixedDeposit(id: string, updates: Partial<FixedDeposit>) {
+    const current = this.state();
+    this.state.set({
+      ...current,
+      fixedDeposits: (current.fixedDeposits || []).map(f => f.id === id ? { ...f, ...updates } : f)
+    });
+    this.isDirty.set(true);
+  }
+
+  deleteFixedDeposit(id: string) {
+    const current = this.state();
+    this.state.set({ ...current, fixedDeposits: (current.fixedDeposits || []).filter(f => f.id !== id) });
+    this.isDirty.set(true);
   }
 
   private deepCopy<T>(obj: T): T {
