@@ -14,6 +14,7 @@ export const routes: Routes = [
       { path: 'card', loadComponent: () => import('./card/card').then(m => m.CardComponent) },
       { path: 'category', loadComponent: () => import('./category/category').then(m => m.CategoryComponent) },
       { path: 'fixed-deposit', loadComponent: () => import('./fixed-deposit/fixed-deposit').then(m => m.FixedDepositComponent) },
+      { path: 'report', loadComponent: () => import('./report/report').then(m => m.ReportComponent) },
       { path: 'settings', loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) }
     ]
   },
