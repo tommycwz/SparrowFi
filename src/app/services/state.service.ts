@@ -118,6 +118,7 @@ export class StateService {
       { id: generateUUID(), name: 'Entertainment', color: '#8B5CF6', type: 'expense' },
       { id: generateUUID(), name: 'Travel', color: '#06B6D4', type: 'expense' },
       { id: generateUUID(), name: 'Work Expenses', color: '#4B5563', type: 'expense' },
+      { id: generateUUID(), name: 'Shopping', color: '#D97706', type: 'expense' },
       { id: generateUUID(), name: 'Others (Expense)', color: '#9CA3AF', type: 'expense' },
 
       // --- TRANSFERS (Moving Money) ---
@@ -287,14 +288,14 @@ export class StateService {
     const current = this.state();
     const bankId = generateUUID();
     const newBank: Bank = { ...bank, id: bankId };
-    
+
     this.state.set({ ...current, banks: [...current.banks, newBank] });
-    
+
     // Add adjustment transaction for initial capital
     if (Number(bank.initialCapital) !== 0) {
       this.addAdjustmentTransaction('bank', bankId, Number(bank.initialCapital), 'Initial balance');
     }
-    
+
     this.isDirty.set(true);
   }
 
@@ -339,7 +340,7 @@ export class StateService {
 
   deleteBank(id: string) {
     let current = this.state();
-    
+
     const balance = this.getAccountBalance('bank', id);
     if (balance !== 0) {
       this.addAdjustmentTransaction('bank', id, -balance, 'Account closure adjustment');
@@ -355,7 +356,7 @@ export class StateService {
     const current = this.state();
     const walletId = generateUUID();
     const newWallet: Wallet = { ...wallet, id: walletId };
-    
+
     this.state.set({ ...current, wallets: [...(current.wallets || []), newWallet] });
 
     // Add adjustment transaction
@@ -407,7 +408,7 @@ export class StateService {
 
   deleteWallet(id: string) {
     let current = this.state();
-    
+
     const balance = this.getAccountBalance('wallet', id);
     if (balance !== 0) {
       this.addAdjustmentTransaction('wallet', id, -balance, 'Account closure adjustment');
@@ -528,11 +529,11 @@ export class StateService {
     const current = this.state();
     const isPositive = amount >= 0;
     const absAmount = Math.abs(amount);
-    
+
     const categories = current.categories || [];
     const categoryName = isPositive ? 'Adjustment (In)' : 'Adjustment (Out)';
     const category = categories.find(c => c.name === categoryName);
-    
+
     const now = new Date();
     const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
     const localTime = now.toTimeString().slice(0, 5);
@@ -559,14 +560,14 @@ export class StateService {
     const current = this.state();
     const transactions = current.transactions || [];
     let balance = 0;
-    
+
     for (const t of transactions) {
       if (t.accountType === accountType && t.accountId === accountId) {
         if (t.type === 'income' || t.type === 'others-in') balance += t.amount;
         if (t.type === 'expense' || t.type === 'others-out') balance -= t.amount;
       }
     }
-    
+
     return balance;
   }
 
