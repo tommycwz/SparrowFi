@@ -194,6 +194,10 @@
     position: relative;
     height: 300px;
     width: 100%;
+
+    &.chart-clickable {
+      cursor: pointer;
+    }
     
     &.doughnut-container {
       height: 350px;

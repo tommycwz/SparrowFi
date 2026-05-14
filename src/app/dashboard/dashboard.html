@@ -68,7 +68,7 @@
               [ngModel]="chartMonth()"
               (ngModelChange)="onChartMonthChange($event)">
           </div>
-          <div class="chart-container">
+          <div class="chart-container chart-clickable" title="Click a bar to filter transactions">
             <canvas id="cashFlowBarChart"></canvas>
           </div>
         </div>
@@ -76,9 +76,9 @@
         <div class="chart-card glass-card">
           <div class="chart-header">
             <h2>Expenses by Category</h2>
-            <span class="chart-month-label">{{ chartMonth() | date:'MMM yyyy':'UTC' }}</span>
+            <span class="chart-month-label">{{ formatChartMonth(chartMonth()) }}</span>
           </div>
-          <div class="chart-container doughnut-container">
+          <div class="chart-container doughnut-container chart-clickable" title="Click a segment to filter transactions">
             <canvas id="categoryDoughnutChart"></canvas>
           </div>
         </div>

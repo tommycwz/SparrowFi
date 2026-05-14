@@ -1,6 +1,7 @@
 import { Component, computed, signal, HostListener } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { StateService, Transaction } from '../services/state.service';
 
 @Component({
@@ -150,7 +151,25 @@ export class TransactionComponent {
     });
   });
 
-  constructor(public stateService: StateService) { }
+  constructor(public stateService: StateService, private route: ActivatedRoute) {
+    const params = this.route.snapshot.queryParamMap;
+
+    if (params.has('month')) {
+      const [year, month] = params.get('month')!.split('-').map(Number);
+      if (!isNaN(year) && !isNaN(month)) {
+        this.filterMonth.set(new Date(year, month - 1, 1));
+      }
+    }
+
+    if (params.has('type')) {
+      const t = params.get('type') as 'income' | 'expense' | 'others-in' | 'others-out' | '';
+      this.filterType.set(t);
+    }
+
+    if (params.has('categoryId')) {
+      this.filterCategoryId.set(params.get('categoryId')!);
+    }
+  }
 
   previousMonth() {
     const current = this.filterMonth();

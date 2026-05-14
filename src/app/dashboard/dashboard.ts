@@ -55,10 +55,15 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       .slice(0, 5);
   });
 
-  chartMonth = signal<string>(new Date().toISOString().slice(0, 7)); // YYYY-MM
+  chartMonth = signal<string>((() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  })());
 
   private doughnutChart: Chart | null = null;
   private barChart: Chart | null = null;
+  // Maps doughnut segment index → category ID for click routing
+  private doughnutCategoryIds: string[] = [];
 
   constructor(
     public router: Router,
@@ -123,6 +128,17 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         maintainAspectRatio: false,
         plugins: {
           legend: { position: 'right', labels: { color: 'white' } }
+        },
+        onClick: (_event: any, elements: any[]) => {
+          if (elements.length > 0) {
+            const idx = elements[0].index;
+            const catId = this.doughnutCategoryIds[idx];
+            if (catId) {
+              this.router.navigate(['/transaction'], {
+                queryParams: { month: this.chartMonth(), categoryId: catId }
+              });
+            }
+          }
         }
       }
     });
@@ -139,6 +155,17 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         scales: {
           y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
           x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+        },
+        onClick: (_event: any, elements: any[]) => {
+          if (elements.length > 0) {
+            const types = ['income', 'expense'] as const;
+            const type = types[elements[0].index];
+            if (type) {
+              this.router.navigate(['/transaction'], {
+                queryParams: { month: this.chartMonth(), type }
+              });
+            }
+          }
         }
       }
     });
@@ -160,31 +187,38 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       ? allTransactions.filter(t => t.date.startsWith(month))
       : allTransactions;
 
-    const expensesByCategory: Record<string, number> = {};
+    const expensesByCategoryId: Record<string, number> = {};
     let totalIncome = 0;
     let totalExpense = 0;
 
     for (const t of transactions) {
       if (t.type === 'expense') {
         totalExpense += t.amount;
-        const cat = categories.find((c: any) => c.id === t.categoryId);
-        const catName = cat ? cat.name : 'Uncategorized';
-        expensesByCategory[catName] = (expensesByCategory[catName] || 0) + t.amount;
+        expensesByCategoryId[t.categoryId] = (expensesByCategoryId[t.categoryId] || 0) + t.amount;
       } else if (t.type === 'income') {
         totalIncome += t.amount;
       }
     }
 
-    if (this.doughnutChart) {
-      this.doughnutChart.data.labels = Object.keys(expensesByCategory);
-      this.doughnutChart.data.datasets[0].data = Object.values(expensesByCategory);
-      
-      // Map custom category colors
-      this.doughnutChart.data.datasets[0].backgroundColor = Object.keys(expensesByCategory).map(name => {
-        const cat = categories.find((c: any) => c.name === name);
-        return cat?.color || '#FF6384';
-      });
+    // Build ordered arrays for doughnut chart
+    const catIds   = Object.keys(expensesByCategoryId);
+    const catNames = catIds.map(id => {
+      const cat = categories.find((c: any) => c.id === id);
+      return cat ? cat.name : 'Uncategorized';
+    });
+    const catAmounts = catIds.map(id => expensesByCategoryId[id]);
+    const catColors  = catIds.map(id => {
+      const cat = categories.find((c: any) => c.id === id);
+      return cat?.color || '#FF6384';
+    });
 
+    // Store for click routing
+    this.doughnutCategoryIds = catIds;
+
+    if (this.doughnutChart) {
+      this.doughnutChart.data.labels = catNames;
+      this.doughnutChart.data.datasets[0].data = catAmounts;
+      this.doughnutChart.data.datasets[0].backgroundColor = catColors;
       this.doughnutChart.update();
     }
 
@@ -192,5 +226,10 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       this.barChart.data.datasets[0].data = [totalIncome, totalExpense];
       this.barChart.update();
     }
+  }
+
+  formatChartMonth(month: string): string {
+    const [year, m] = month.split('-').map(Number);
+    return new Date(year, m - 1, 1).toLocaleString('en', { month: 'short', year: 'numeric' });
   }
 }
