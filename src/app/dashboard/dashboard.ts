@@ -60,6 +60,11 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   })());
 
+  categoryChartMonth = signal<string>((() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  })());
+
   private doughnutChart: Chart | null = null;
   private barChart: Chart | null = null;
   // Maps doughnut segment index → category ID for click routing
@@ -135,7 +140,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
             const catId = this.doughnutCategoryIds[idx];
             if (catId) {
               this.router.navigate(['/transaction'], {
-                queryParams: { month: this.chartMonth(), categoryId: catId }
+                queryParams: { month: this.categoryChartMonth(), categoryId: catId }
               });
             }
           }
@@ -178,13 +183,23 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     this.updateCharts();
   }
 
+  onCategoryChartMonthChange(val: string) {
+    this.categoryChartMonth.set(val);
+    this.updateCharts();
+  }
+
   private updateCharts() {
     const allTransactions = this.stateService.state().transactions || [];
     const categories = this.stateService.state().categories || [];
     const month = this.chartMonth();
+    const categoryMonth = this.categoryChartMonth();
 
     const transactions = month
       ? allTransactions.filter(t => t.date.startsWith(month))
+      : allTransactions;
+
+    const categoryTransactions = categoryMonth
+      ? allTransactions.filter(t => t.date.startsWith(categoryMonth))
       : allTransactions;
 
     const expensesByCategoryId: Record<string, number> = {};
@@ -194,9 +209,14 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     for (const t of transactions) {
       if (t.type === 'expense') {
         totalExpense += t.amount;
-        expensesByCategoryId[t.categoryId] = (expensesByCategoryId[t.categoryId] || 0) + t.amount;
       } else if (t.type === 'income') {
         totalIncome += t.amount;
+      }
+    }
+
+    for (const t of categoryTransactions) {
+      if (t.type === 'expense') {
+        expensesByCategoryId[t.categoryId] = (expensesByCategoryId[t.categoryId] || 0) + t.amount;
       }
     }
 
