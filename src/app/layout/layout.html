@@ -52,10 +52,12 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="btn-secondary" (click)="exportData()" [class.pulse]="stateService.isDirty()"
-        [title]="isCollapsed() ? 'Export .spw' : ''">
+      <button class="btn-secondary export-btn" (click)="exportData()"
+        [class.dirty]="stateService.isDirty()"
+        [title]="isCollapsed() ? 'Export ' + exportLabel() : ''">
         <span class="icon">💾</span>
-        <span class="label">Export .spw</span>
+        <span class="label">Export {{ exportLabel() }}</span>
+        <span class="unsaved-badge" *ngIf="stateService.isDirty() && !isCollapsed()">Unsaved</span>
       </button>
       <button class="btn-outline" (click)="logout()" [title]="isCollapsed() ? 'Logout' : ''">
         <span class="icon">🚪</span>

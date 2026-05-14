@@ -11,23 +11,124 @@
   <div class="content-grid">
     <div class="glass-card">
       <h2>General Preferences</h2>
-      
+
       <div class="setting-item">
         <div class="setting-info">
           <h3>Currency</h3>
           <p>This will be used for all financial formatting across the application.</p>
         </div>
-        
         <div class="setting-control">
           <select [(ngModel)]="selectedCurrency" (change)="saveSettings()" class="currency-select">
             <option *ngFor="let c of currencies" [value]="c.code">{{ c.label }}</option>
           </select>
         </div>
       </div>
+    </div>
 
-      <div class="version-info">
-        <p>SparrowFi Version: <span>{{ version }}</span></p>
+    <!-- Security card -->
+    <div class="glass-card">
+      <h2>Security</h2>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>Password Protection</h3>
+          <p>
+            Encrypt your .spw file so it can only be opened with a password.
+            A recovery key is generated when you enable this — save it somewhere safe.
+          </p>
+        </div>
+        <div class="setting-control">
+          <label class="toggle-switch">
+            <input type="checkbox" [checked]="passwordEnabled()" (change)="onPasswordToggle()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="security-status" [class.active]="passwordEnabled()">
+        <span class="status-dot"></span>
+        <span>{{ passwordEnabled() ? 'File will be encrypted on next export' : 'No encryption — standard XOR obfuscation only' }}</span>
       </div>
     </div>
+
+    <div class="version-info">
+      <p>SparrowFi Version: <span>{{ version }}</span></p>
+      <a routerLink="/version-log" class="version-history-link">View version history →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Password setup modal ───────────────────────────────────────────────── -->
+<div class="pw-overlay" *ngIf="passwordModalStep() !== null" (click)="closePasswordModal()">
+  <div class="pw-modal glass-card" (click)="$event.stopPropagation()">
+
+    <!-- Step 1: set password -->
+    <ng-container *ngIf="passwordModalStep() === 'setup'">
+      <div class="pw-modal-header">
+        <span class="pw-icon">🔐</span>
+        <h2>Enable Password Protection</h2>
+        <p>Choose a strong password for your .spw file.</p>
+      </div>
+
+      <div class="pw-warning">
+        ⚠️ <strong>No server-side recovery.</strong> A recovery key will be generated — you <em>must</em> save it. If you lose both your password and recovery key, your data <strong>cannot be recovered</strong>.
+      </div>
+
+      <div class="pw-modal-body">
+        <input
+          type="password"
+          class="pw-input"
+          placeholder="New password (min. 6 characters)"
+          [(ngModel)]="passwordInput"
+        />
+        <input
+          type="password"
+          class="pw-input"
+          placeholder="Confirm password"
+          [(ngModel)]="passwordConfirm"
+          (keydown.enter)="confirmPasswordSetup()"
+        />
+        <div class="pw-error" *ngIf="passwordError">{{ passwordError }}</div>
+
+        <div class="pw-actions">
+          <button class="btn-ghost" (click)="closePasswordModal()">Cancel</button>
+          <button class="btn-primary" (click)="confirmPasswordSetup()" [disabled]="isProcessing">
+            Continue →
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Step 2: show recovery key -->
+    <ng-container *ngIf="passwordModalStep() === 'recovery'">
+      <div class="pw-modal-header">
+        <span class="pw-icon">🗝️</span>
+        <h2>Save Your Recovery Key</h2>
+        <p>This key is the <strong>only way</strong> to recover your data if you forget your password.</p>
+      </div>
+
+      <div class="recovery-key-box">
+        <span class="recovery-key-label">Recovery Key</span>
+        <code class="recovery-key">{{ generatedRecoveryKey }}</code>
+        <p class="recovery-key-hint">Write it down or store it in a password manager.</p>
+      </div>
+
+      <div class="pw-modal-body">
+        <label class="confirm-checkbox">
+          <input type="checkbox" [(ngModel)]="recoveryConfirmed">
+          <span>I have saved my recovery key in a safe place.</span>
+        </label>
+        <div class="pw-error" *ngIf="passwordError">{{ passwordError }}</div>
+
+        <div class="pw-actions">
+          <button class="btn-ghost" (click)="closePasswordModal()">Cancel</button>
+          <button class="btn-primary" (click)="finalizePasswordEnable()" [disabled]="isProcessing || !recoveryConfirmed">
+            <span *ngIf="!isProcessing">Enable & Export</span>
+            <span *ngIf="isProcessing">Encrypting…</span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
   </div>
 </div>

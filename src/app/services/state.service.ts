@@ -60,6 +60,7 @@ export interface Transaction {
 
 export interface Settings {
   currency: string;
+  passwordEnabled?: boolean;
 }
 
 export interface FixedDeposit {
@@ -147,6 +148,18 @@ export class StateService {
   readonly state = signal<AppState>(this.deepCopy(this.initialState));
   readonly isDirty = signal<boolean>(false);
   readonly isLoggedIn = signal<boolean>(false);
+  /** Password held in memory for SPW3 export; never persisted. */
+  readonly filePassword = signal<string | null>(null);
+  /** Original filename of the loaded .spw file; null for new users. */
+  readonly loadedFilename = signal<string | null>(null);
+
+  setFilePassword(password: string | null) {
+    this.filePassword.set(password);
+  }
+
+  setLoadedFilename(name: string | null) {
+    this.loadedFilename.set(name);
+  }
 
   // Computed currency symbol
   readonly currencySymbol = computed(() => {
@@ -268,12 +281,15 @@ export class StateService {
   startNewUser() {
     this.setState(this.deepCopy(this.initialState));
     this.isDirty.set(true);
+    this.loadedFilename.set(null);
   }
 
   logout() {
     this.state.set(this.deepCopy(this.initialState));
     this.isDirty.set(false);
     this.isLoggedIn.set(false);
+    this.filePassword.set(null);
+    this.loadedFilename.set(null);
   }
 
   // --- Settings ---

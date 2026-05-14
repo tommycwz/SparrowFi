@@ -1,0 +1,33 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Version History</h1>
+        <p>What's new in SparrowFi</p>
+      </div>
+      <a routerLink="/settings" class="back-link">← Back to Settings</a>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <div class="timeline">
+      <div class="timeline-entry glass-card" *ngFor="let entry of entries">
+        <div class="entry-header">
+          <div class="entry-version-wrap">
+            <span class="entry-version">v{{ entry.version }}</span>
+            <span class="entry-tag tag-latest" *ngIf="entry.tag === 'latest'">Latest</span>
+            <span class="entry-tag tag-initial" *ngIf="entry.tag === 'initial'">Initial</span>
+          </div>
+          <span class="entry-date">{{ entry.date }}</span>
+        </div>
+
+        <ul class="change-list">
+          <li *ngFor="let change of entry.changes" class="change-item">
+            <span class="change-badge" [class]="'badge-' + change.type">{{ typeLabel(change.type) }}</span>
+            <span class="change-text">{{ change.text }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

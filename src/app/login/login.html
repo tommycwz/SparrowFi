@@ -37,3 +37,44 @@
     </button>
   </div>
 </div>
+
+<!-- Password prompt overlay -->
+<div class="pw-overlay" *ngIf="showPasswordPrompt" (click)="cancelPasswordPrompt()">
+  <div class="pw-modal glass-card" (click)="$event.stopPropagation()">
+    <div class="pw-modal-header">
+      <span class="pw-lock-icon">🔒</span>
+      <h2>Password Protected</h2>
+      <p>This file is encrypted. Enter your {{ useRecovery ? 'recovery key' : 'password' }} to continue.</p>
+    </div>
+
+    <div class="pw-modal-body">
+      <div class="pw-input-wrap">
+        <input
+          [type]="useRecovery ? 'text' : 'password'"
+          class="pw-input"
+          [placeholder]="useRecovery ? 'XXXXXX-XXXXXX-XXXXXX' : 'Enter password'"
+          [(ngModel)]="passwordInput"
+          (keydown.enter)="submitPassword()"
+          autofocus
+        />
+      </div>
+
+      <div class="pw-error" *ngIf="passwordError">{{ passwordError }}</div>
+
+      <button class="btn-primary pw-submit" (click)="submitPassword()" [disabled]="isDecrypting || !passwordInput.trim()">
+        <span *ngIf="!isDecrypting">Unlock</span>
+        <span *ngIf="isDecrypting">Decrypting…</span>
+      </button>
+
+      <div class="pw-divider"><span>OR</span></div>
+
+      <button class="btn-ghost" (click)="toggleRecoveryMode()">
+        {{ useRecovery ? '← Use password instead' : 'Use recovery key instead' }}
+      </button>
+    </div>
+
+    <div class="pw-modal-footer">
+      <button class="btn-ghost btn-cancel" (click)="cancelPasswordPrompt()">Cancel</button>
+    </div>
+  </div>
+</div>

@@ -55,6 +55,71 @@
             color: white;
           }
         }
+
+        // Toggle switch
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 52px;
+          height: 28px;
+          cursor: pointer;
+
+          input { opacity: 0; width: 0; height: 0; }
+
+          .slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 28px;
+            transition: background 0.25s;
+
+            &::before {
+              content: '';
+              position: absolute;
+              width: 20px;
+              height: 20px;
+              left: 4px;
+              bottom: 4px;
+              border-radius: 50%;
+              background: white;
+              transition: transform 0.25s;
+            }
+          }
+
+          input:checked + .slider {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+          }
+          input:checked + .slider::before {
+            transform: translateX(24px);
+          }
+        }
+      }
+    }
+
+    // Security status bar
+    .security-status {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.5rem;
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        flex-shrink: 0;
+      }
+
+      &.active {
+        color: rgba(79, 172, 254, 0.9);
+        background: rgba(79, 172, 254, 0.08);
+        .status-dot { background: #4facfe; box-shadow: 0 0 6px #4facfe; }
       }
     }
   }
@@ -63,7 +128,11 @@
     margin-top: 3rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 
     p {
       color: rgba(255, 255, 255, 0.3);
@@ -75,5 +144,167 @@
         font-family: monospace;
       }
     }
+
+    .version-history-link {
+      color: rgba(79, 172, 254, 0.6);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: color 0.2s;
+
+      &:hover { color: #4facfe; }
+    }
   }
 }
+
+// ── Password modal overlay ────────────────────────────────────────────────────
+
+.pw-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+
+  .pw-modal {
+    width: 100%;
+    max-width: 460px;
+    padding: 2.5rem 2rem;
+    color: white;
+
+    &:hover { transform: none; }
+
+    .pw-modal-header {
+      text-align: center;
+      margin-bottom: 1.25rem;
+
+      .pw-icon { font-size: 2.4rem; display: block; margin-bottom: 0.6rem; }
+      h2 { margin: 0 0 0.4rem; font-size: 1.4rem; font-weight: 700; }
+      p  { margin: 0; color: rgba(255,255,255,0.6); font-size: 0.9rem; }
+    }
+
+    .pw-warning {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: rgba(251, 191, 36, 0.9);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .pw-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+
+      .pw-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(79, 172, 254, 0.35);
+        background: rgba(0,0,0,0.25);
+        color: white;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+
+        &::placeholder { color: rgba(255,255,255,0.3); }
+        &:focus { outline: none; border-color: #4facfe; box-shadow: 0 0 0 3px rgba(79,172,254,0.2); }
+      }
+
+      .pw-error {
+        color: #ff4b4b;
+        font-size: 0.875rem;
+        background: rgba(255,75,75,0.1);
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+      }
+
+      .pw-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 0.25rem;
+
+        .btn-ghost {
+          background: none;
+          border: 1px solid rgba(255,255,255,0.15);
+          color: rgba(255,255,255,0.6);
+          padding: 0.7rem 1.25rem;
+          border-radius: 10px;
+          cursor: pointer;
+          font-size: 0.95rem;
+          transition: all 0.2s;
+          &:hover { color: white; border-color: rgba(255,255,255,0.4); }
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, #00f2fe, #4facfe);
+          border: none;
+          color: white;
+          padding: 0.7rem 1.5rem;
+          border-radius: 10px;
+          cursor: pointer;
+          font-size: 0.95rem;
+          font-weight: 600;
+          transition: all 0.2s;
+          &:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 14px -6px #4facfe; }
+          &:disabled { opacity: 0.45; cursor: not-allowed; }
+        }
+      }
+
+      // Recovery step
+      .confirm-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.75);
+        line-height: 1.4;
+
+        input[type="checkbox"] { flex-shrink: 0; margin-top: 2px; accent-color: #4facfe; width: 16px; height: 16px; }
+      }
+    }
+
+    .recovery-key-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(79,172,254,0.3);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+
+      .recovery-key-label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.6rem;
+      }
+
+      .recovery-key {
+        display: block;
+        font-family: 'Courier New', monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #4facfe;
+        word-break: break-all;
+      }
+
+      .recovery-key-hint {
+        margin: 0.6rem 0 0;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.4);
+      }
+    }
+  }
+}
+

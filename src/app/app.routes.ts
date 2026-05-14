@@ -15,7 +15,8 @@ export const routes: Routes = [
       { path: 'category', loadComponent: () => import('./category/category').then(m => m.CategoryComponent) },
       { path: 'fixed-deposit', loadComponent: () => import('./fixed-deposit/fixed-deposit').then(m => m.FixedDepositComponent) },
       { path: 'report', loadComponent: () => import('./report/report').then(m => m.ReportComponent) },
-      { path: 'settings', loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) }
+      { path: 'settings', loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) },
+      { path: 'version-log', loadComponent: () => import('./version-log/version-log').then(m => m.VersionLogComponent) }
     ]
   },
   { path: '**', redirectTo: '/login' }

@@ -91,6 +91,10 @@ $transition: 0.3s ease;
           visibility: hidden;
           margin: 0;
         }
+
+        .unsaved-badge {
+          display: none;
+        }
       }
     }
   }
@@ -240,6 +244,33 @@ $transition: 0.3s ease;
 
       &:hover {
         background: rgba(79, 172, 254, 0.2);
+      }
+
+      &.dirty {
+        background: rgba(79, 172, 254, 0.18);
+        border-color: rgba(79, 172, 254, 0.5);
+        color: #fff;
+        animation: pulse 2s infinite;
+
+        &:hover {
+          background: rgba(79, 172, 254, 0.3);
+        }
+
+        .icon { filter: drop-shadow(0 0 4px #4facfe); }
+      }
+
+      .unsaved-badge {
+        margin-left: auto;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: #4facfe;
+        color: #0f172a;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
     }
 
