@@ -1,0 +1,215 @@
+<div class="module-container">
+  <header class="module-header">
+    <div class="title-area">
+      <div>
+        <h1>Monthly Recurring</h1>
+        <p>Set up and trigger <span>automated monthly transaction schedules</span></p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <!-- Form Section -->
+    <div class="form-section glass-card">
+      <h2>{{ editingId ? 'Edit Recurring Schedule' : 'New Recurring Schedule' }}</h2>
+      <form (ngSubmit)="saveRecurringTransaction()" class="data-form">
+        <!-- Start Date -->
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" [(ngModel)]="newStartDate" name="startDate"
+            [attr.data-date]="(newStartDate | date:'dd/MM/yyyy') || 'dd/mm/yyyy'" required>
+        </div>
+
+        <!-- Months -->
+        <div class="form-group">
+          <label for="months">Recurring Period (Months)</label>
+          <input type="number" id="months" [(ngModel)]="newMonths" name="months" placeholder="e.g. 12" min="1" step="1" required>
+        </div>
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label for="amount">Amount ({{ stateService.currencySymbol() }})</label>
+          <input type="number" id="amount" [(ngModel)]="newAmount" name="amount" placeholder="0.00" step="0.01" min="0" required>
+        </div>
+
+        <!-- Account -->
+        <div class="form-group">
+          <label>Account (Bank/Wallet/Card)</label>
+          <div class="custom-select-container">
+            <div class="select-trigger" (click)="toggleAccountDropdown($event)" [class.has-value]="newCombinedAccount">
+              <span *ngIf="!newCombinedAccount">Choose Account</span>
+              <span *ngIf="newCombinedAccount" class="selection">
+                <span class="dot"
+                  [style.background-color]="getAccountColor(newCombinedAccount.split(':')[0], newCombinedAccount.split(':')[1])"></span>
+                {{ getAccountName(newCombinedAccount.split(':')[0], newCombinedAccount.split(':')[1]) }}
+              </span>
+              <span class="chevron">▼</span>
+            </div>
+            <div class="select-options glass-card shadow-lg" *ngIf="showAccountDropdown">
+              <div class="opt-group" *ngIf="banks().length > 0">
+                <div class="group-label">Banks</div>
+                <div class="option" *ngFor="let b of banks()" (click)="selectAccount('bank', b.id)">
+                  <span class="dot" [style.background-color]="b.color"></span>
+                  <span class="name">{{ b.name }}</span>
+                </div>
+              </div>
+              <div class="opt-group" *ngIf="wallets().length > 0">
+                <div class="group-label">Wallets</div>
+                <div class="option" *ngFor="let w of wallets()" (click)="selectAccount('wallet', w.id)">
+                  <span class="dot" [style.background-color]="w.color"></span>
+                  <span class="name">{{ w.name }}</span>
+                </div>
+              </div>
+              <div class="opt-group" *ngIf="cards().length > 0">
+                <div class="group-label">Cards</div>
+                <div class="option" *ngFor="let c of cards()" (click)="selectAccount('card', c.id)">
+                  <span class="dot" [style.background-color]="c.color"></span>
+                  <span class="name">{{ c.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Type Filter -->
+        <div class="form-group">
+          <label>Filter Categories by Type</label>
+          <div class="toggle-group">
+            <button type="button" class="toggle-btn" [class.active]="selectedCategoryFilter() === 'expense'"
+              (click)="setCategoryFilter('expense')">Expense</button>
+            <button type="button" class="toggle-btn" [class.active]="selectedCategoryFilter() === 'income'"
+              (click)="setCategoryFilter('income')">Income</button>
+            <button type="button" class="toggle-btn" [class.active]="selectedCategoryFilter() === 'others-in'"
+              (click)="setCategoryFilter('others-in')">Other In</button>
+            <button type="button" class="toggle-btn" [class.active]="selectedCategoryFilter() === 'others-out'"
+              (click)="setCategoryFilter('others-out')">Other Out</button>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label>Category</label>
+          <div class="custom-select-container">
+            <div class="select-trigger" (click)="toggleCategoryDropdown($event)" [class.has-value]="newCategoryId">
+              <span *ngIf="!newCategoryId">Choose Category</span>
+              <span *ngIf="newCategoryId" class="selection">
+                <span class="dot" [style.background-color]="getCategoryColor(newCategoryId)"></span>
+                {{ getCategoryName(newCategoryId) }}
+              </span>
+              <span class="chevron">▼</span>
+            </div>
+            <div class="select-options glass-card shadow-lg" *ngIf="showCategoryDropdown">
+              <div class="option" *ngFor="let cat of filteredCategories()" (click)="selectCategory(cat.id)">
+                <span class="dot" [style.background-color]="cat.color"></span>
+                <span class="name">{{ cat.name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remarks -->
+        <div class="form-group">
+          <label for="remarks">Transaction Remarks</label>
+          <input type="text" id="remarks" [(ngModel)]="newNotes" name="remarks" placeholder="e.g. Netflix Subscription" required>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-group">
+          <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="newActive" name="active">
+            <span class="checkmark"></span>
+            <span class="label-text">Active Schedule</span>
+          </label>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button type="submit" class="btn-primary" 
+            [disabled]="!newStartDate || newMonths === null || newAmount === null || !newCombinedAccount || !newCategoryId || !newNotes" 
+            style="flex: 2;">
+            {{ editingId ? 'Update Schedule' : 'Create Schedule' }}
+          </button>
+          <button type="button" *ngIf="editingId" (click)="cancelEdit()" class="btn-secondary" style="flex: 1;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- List Section -->
+    <div class="list-section">
+      <div class="glass-card">
+        <h2>Active Recurring Schedules</h2>
+
+        <div class="empty-state" *ngIf="recurringTransactions().length === 0">
+          <div class="icon">🔁</div>
+          <p>You haven't set up any recurring transactions yet.</p>
+        </div>
+
+        <div class="recurring-grid" *ngIf="recurringTransactions().length > 0">
+          <div class="recurring-card" *ngFor="let rt of recurringTransactions()" [class.inactive]="!rt.active">
+            <!-- Header -->
+            <div class="card-header">
+              <div class="header-left">
+                <h3>{{ rt.notes || 'Unnamed Schedule' }}</h3>
+                <p class="remarks">Start Date: {{ rt.startDate | date:'dd/MM/yyyy' }}</p>
+              </div>
+              <div class="header-right">
+                <span class="status-badge" 
+                  [class.active]="rt.active && rt.triggeredCount < rt.months"
+                  [class.completed]="rt.triggeredCount >= rt.months"
+                  [class.paused]="!rt.active && rt.triggeredCount < rt.months">
+                  {{ rt.triggeredCount >= rt.months ? 'Completed' : (rt.active ? 'Active' : 'Paused') }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="card-amount">
+              <span class="currency">{{ stateService.currencySymbol() }}</span>
+              <span>{{ rt.amount | number:'1.2-2' }}</span>
+            </div>
+
+            <!-- Tags -->
+            <div class="card-tags">
+              <span class="tag">
+                <span class="dot" [style.background-color]="getAccountColor(rt.accountType, rt.accountId)"></span>
+                {{ getAccountName(rt.accountType, rt.accountId) }}
+              </span>
+              <span class="tag">
+                <span class="dot" [style.background-color]="getCategoryColor(rt.categoryId)"></span>
+                {{ getCategoryName(rt.categoryId) }}
+              </span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="card-progress">
+              <div class="progress-labels">
+                <span>Triggered: {{ rt.triggeredCount }} / {{ rt.months }} months</span>
+                <span class="next-date" *ngIf="rt.triggeredCount < rt.months">Next: {{ getNextTransactionDate(rt) }}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" [style.width.%]="(rt.triggeredCount / rt.months) * 100"></div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-actions">
+              <button class="btn-primary" (click)="triggerRecurringTransaction(rt.id)" [disabled]="rt.triggeredCount >= rt.months || !rt.active" style="flex: 2;">
+                ⚡ Trigger
+              </button>
+              <button class="btn-action-icon" (click)="editRecurringTransaction(rt)" title="Edit">
+                ✏️
+              </button>
+              <button class="btn-action-icon delete" (click)="deleteRecurringTransaction(rt.id)" title="Delete">
+                🗑️
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

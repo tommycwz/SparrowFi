@@ -239,6 +239,7 @@ $transition: 0.3s ease;
     }
 
     .btn-secondary {
+      position: relative;
       background: rgba(79, 172, 254, 0.1);
       color: #4facfe;
 
@@ -260,7 +261,9 @@ $transition: 0.3s ease;
       }
 
       .unsaved-badge {
-        margin-left: auto;
+        position: absolute;
+        top: -8px;
+        left: 20px;
         font-size: 0.6rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -271,6 +274,7 @@ $transition: 0.3s ease;
         border-radius: 4px;
         white-space: nowrap;
         flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
       }
     }
 
@@ -320,4 +324,135 @@ $transition: 0.3s ease;
     margin-left: $sidebar-collapsed-width;
     padding: 1.25rem;
   }
+}
+
+// ─── Premium 3-Way Logout Modal Styles ───────────────────────────
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeInOverlay 0.25s ease-out;
+
+  .modal-content {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideUpModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    .modal-header-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
+      animation: bounceWarn 0.8s ease-out;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .modal-actions-3way {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .btn-modal {
+        width: 100%;
+        padding: 0.85rem 1.25rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+
+        &.btn-save {
+          background: linear-gradient(135deg, #00f2fe, #4facfe);
+          color: #0f172a;
+          box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+          border: none;
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+          }
+        }
+
+        &.btn-discard {
+          background: rgba(255, 75, 75, 0.1);
+          color: #ff4b4b;
+          border-color: rgba(255, 75, 75, 0.2);
+          &:hover {
+            background: rgba(255, 75, 75, 0.2);
+            border-color: rgba(255, 75, 75, 0.4);
+            transform: translateY(-1px);
+          }
+        }
+
+        &.btn-cancel {
+          background: rgba(255, 255, 255, 0.04);
+          color: rgba(255, 255, 255, 0.6);
+          border-color: rgba(255, 255, 255, 0.08);
+          &:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ─── Modal Animations ────────────────────────────────────────────
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceWarn {
+  0% { transform: scale(0.3); }
+  50% { transform: scale(1.1); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }

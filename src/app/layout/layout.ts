@@ -57,14 +57,32 @@ export class LayoutComponent implements OnInit {
     this.stateService.markClean();
   }
 
-  async logout() {
+  showLogoutModal = signal(false);
+
+  logout() {
     if (this.stateService.isDirty()) {
-      const confirmExport = confirm('You have unsaved changes. Do you want to export before logging out?');
-      if (confirmExport) {
-        await this.exportData();
-        return;
-      }
+      this.showLogoutModal.set(true);
+    } else {
+      this.proceedLogout();
     }
+  }
+
+  async saveAndLogout() {
+    this.showLogoutModal.set(false);
+    await this.exportData();
+    this.proceedLogout();
+  }
+
+  discardAndLogout() {
+    this.showLogoutModal.set(false);
+    this.proceedLogout();
+  }
+
+  cancelLogout() {
+    this.showLogoutModal.set(false);
+  }
+
+  private proceedLogout() {
     this.stateService.logout();
     this.router.navigate(['/login']);
   }

@@ -190,7 +190,7 @@
       </div>
       <div class="filter-row dropdown-row">
         <!-- FIXED: signal-based two-way binding for all dropdowns -->
-        <select [ngModel]="filterType()" (ngModelChange)="filterType.set($event)">
+        <select [ngModel]="filterType()" (ngModelChange)="onFilterTypeChange($event)">
           <option value="">All Types</option>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
@@ -211,7 +211,23 @@
         </select>
         <select [ngModel]="filterCategoryId()" (ngModelChange)="filterCategoryId.set($event)">
           <option value="">All Categories</option>
-          <option *ngFor="let cat of stateService.state().categories" [value]="cat.id">{{ cat.name }}</option>
+          <ng-container *ngIf="!filterType(); else filteredOptions">
+            <optgroup label="Income" *ngIf="getCategoriesByType('income').length > 0">
+              <option *ngFor="let cat of getCategoriesByType('income')" [value]="cat.id">{{ cat.name }}</option>
+            </optgroup>
+            <optgroup label="Expenses" *ngIf="getCategoriesByType('expense').length > 0">
+              <option *ngFor="let cat of getCategoriesByType('expense')" [value]="cat.id">{{ cat.name }}</option>
+            </optgroup>
+            <optgroup label="Others (In)" *ngIf="getCategoriesByType('others-in').length > 0">
+              <option *ngFor="let cat of getCategoriesByType('others-in')" [value]="cat.id">{{ cat.name }}</option>
+            </optgroup>
+            <optgroup label="Others (Out)" *ngIf="getCategoriesByType('others-out').length > 0">
+              <option *ngFor="let cat of getCategoriesByType('others-out')" [value]="cat.id">{{ cat.name }}</option>
+            </optgroup>
+          </ng-container>
+          <ng-template #filteredOptions>
+            <option *ngFor="let cat of filteredFilterCategories()" [value]="cat.id">{{ cat.name }}</option>
+          </ng-template>
         </select>
         <button type="button" class="btn-reset"
           *ngIf="filterText() || filterType() || filterCombinedAccount() || filterCategoryId()"

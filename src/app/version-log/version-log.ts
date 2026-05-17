@@ -22,9 +22,23 @@ export class VersionLogComponent {
 
   entries: VersionEntry[] = [
     {
-      version: '1.1.0',
+      version: '1.2.0',
       date: '17 May 2026',
       tag: 'latest',
+      changes: [
+        { type: 'new', text: 'Added Monthly Recurring transaction scheduling module' },
+        { type: 'new', text: 'Auto-generation trigger supporting month offset date adjustments' },
+        { type: 'new', text: 'Daily active recurring schedule auto-triggering on .spw file load' },
+        { type: 'new', text: 'Stunning custom 3-way logout confirmation dialog (Save, Discard, Cancel)' },
+        { type: 'improve', text: 'Double-trigger lookahead safeguard checking date, category, and remarks' },
+        { type: 'improve', text: 'Interactive progress bar indicating monthly trigger completions' },
+        { type: 'improve', text: 'Integrated Category selection filters matching Income, Expense, Other In, and Other Out' },
+        { type: 'improve', text: 'Clean absolute-positioned Unsaved notification badge overlaying the Export button' }
+      ]
+    },
+    {
+      version: '1.1.0',
+      date: '17 May 2026',
       changes: [
         { type: 'improve', text: 'Overhauled financial reports featuring Chart.js interactive category breakdown doughnut charts' },
         { type: 'improve', text: 'Added Annual month-on-month trend grouped bar charts comparing Income vs Expenses' },

@@ -41,6 +41,10 @@
         <span class="icon">🔒</span>
         <span class="label">Fixed Deposit</span>
       </a>
+      <a routerLink="/monthly-recurring" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Monthly Recurring' : ''">
+        <span class="icon">🔁</span>
+        <span class="label">Monthly Recurring</span>
+      </a>
       <a routerLink="/report" routerLinkActive="active" class="nav-item" [title]="isCollapsed() ? 'Reports' : ''">
         <span class="icon">📈</span>
         <span class="label">Reports</span>
@@ -69,4 +73,25 @@
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
+
+  <!-- Premium Logout Confirmation Modal -->
+  <div class="modal-overlay" *ngIf="showLogoutModal()" (click)="cancelLogout()">
+    <div class="modal-content glass-card shadow-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header-icon">⚠️</div>
+      <h2>Unsaved Changes</h2>
+      <p>You have unsaved changes. Would you like to export and backup your work before logging out?</p>
+      
+      <div class="modal-actions-3way">
+        <button class="btn-modal btn-save" (click)="saveAndLogout()">
+          <span class="icon">💾</span> Save & Logout
+        </button>
+        <button class="btn-modal btn-discard" (click)="discardAndLogout()">
+          <span class="icon">🗑️</span> Discard & Logout
+        </button>
+        <button class="btn-modal btn-cancel" (click)="cancelLogout()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

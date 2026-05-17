@@ -74,6 +74,19 @@ export interface FixedDeposit {
   status: 'active' | 'matured' | 'withdrawn';
 }
 
+export interface RecurringTransaction {
+  id: string;
+  startDate: string; // YYYY-MM-DD
+  months: number; // recurring for how many months
+  amount: number;
+  accountType: 'bank' | 'wallet' | 'card';
+  accountId: string;
+  categoryId: string;
+  notes: string; // remarks
+  active: boolean;
+  triggeredCount: number; // starts at 0, goes up to months
+}
+
 export interface AppState {
   user: {
     isNew: boolean;
@@ -86,6 +99,7 @@ export interface AppState {
   categories: Category[];
   transactions: Transaction[];
   fixedDeposits: FixedDeposit[];
+  recurringTransactions?: RecurringTransaction[];
   // Legacy support for older files
   creditCards?: any[];
   dropboxes?: any[];
@@ -141,7 +155,8 @@ export class StateService {
       { id: generateUUID(), name: 'Adjustment (Out)', color: '#475569', type: 'others-out' }
     ],
     transactions: [],
-    fixedDeposits: []
+    fixedDeposits: [],
+    recurringTransactions: []
   };
 
   // State signals
@@ -269,12 +284,68 @@ export class StateService {
       });
     }
 
+    if (!newState.recurringTransactions) {
+      newState.recurringTransactions = [];
+    }
+
+    let hasChanges = false;
+
+    // Auto-trigger active recurring transactions scheduled for today on load
+    if (newState.recurringTransactions && newState.recurringTransactions.length > 0) {
+      const now = new Date();
+      const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+      const localTime = now.toTimeString().slice(0, 8); // HH:mm:ss
+
+      newState.recurringTransactions.forEach(rt => {
+        if (rt.active && rt.triggeredCount < rt.months) {
+          const targetDate = this.addMonthsToDate(rt.startDate, rt.triggeredCount);
+          if (targetDate === todayStr) {
+            // Check for double trigger to prevent duplicating if file is re-loaded in the same day
+            const hasDoubleTrigger = newState.transactions?.some(t =>
+              t.date === todayStr &&
+              t.accountId === rt.accountId &&
+              t.accountType === rt.accountType &&
+              t.categoryId === rt.categoryId &&
+              t.amount === rt.amount &&
+              t.notes === rt.notes
+            );
+
+            if (!hasDoubleTrigger) {
+              const category = newState.categories?.find(c => c.id === rt.categoryId);
+              const categoryType = category?.type || 'expense';
+
+              const newT: Transaction = {
+                id: generateUUID(),
+                date: todayStr,
+                time: localTime,
+                amount: rt.amount,
+                type: categoryType,
+                accountType: rt.accountType,
+                accountId: rt.accountId,
+                categoryId: rt.categoryId,
+                notes: rt.notes
+              };
+
+              if (!newState.transactions) newState.transactions = [];
+              newState.transactions.push(newT);
+
+              rt.triggeredCount += 1;
+              if (rt.triggeredCount >= rt.months) {
+                rt.active = false;
+              }
+              hasChanges = true;
+            }
+          }
+        }
+      });
+    }
+
     const normalizedState = {
       ...this.deepCopy(this.initialState),
       ...newState
     };
     this.state.set(normalizedState);
-    this.isDirty.set(false);
+    this.isDirty.set(hasChanges);
     this.isLoggedIn.set(true);
   }
 
@@ -539,6 +610,100 @@ export class StateService {
     const current = this.state();
     this.state.set({ ...current, fixedDeposits: (current.fixedDeposits || []).filter(f => f.id !== id) });
     this.isDirty.set(true);
+  }
+
+  // --- Recurring Transactions ---
+  addRecurringTransaction(rt: Omit<RecurringTransaction, 'id' | 'triggeredCount'>) {
+    const current = this.state();
+    const newRT: RecurringTransaction = {
+      ...rt,
+      id: generateUUID(),
+      triggeredCount: 0
+    };
+    this.state.set({
+      ...current,
+      recurringTransactions: [...(current.recurringTransactions || []), newRT]
+    });
+    this.isDirty.set(true);
+  }
+
+  updateRecurringTransaction(id: string, updates: Partial<RecurringTransaction>) {
+    const current = this.state();
+    this.state.set({
+      ...current,
+      recurringTransactions: (current.recurringTransactions || []).map(r => r.id === id ? { ...r, ...updates } : r)
+    });
+    this.isDirty.set(true);
+  }
+
+  deleteRecurringTransaction(id: string) {
+    const current = this.state();
+    this.state.set({
+      ...current,
+      recurringTransactions: (current.recurringTransactions || []).filter(r => r.id !== id)
+    });
+    this.isDirty.set(true);
+  }
+
+  triggerRecurringTransaction(id: string) {
+    const current = this.state();
+    const rt = (current.recurringTransactions || []).find(r => r.id === id);
+    if (!rt) return;
+
+    if (rt.triggeredCount >= rt.months) {
+      alert('This recurring transaction has already been fully triggered for all months.');
+      return;
+    }
+
+    // Determine target date
+    const targetDate = this.addMonthsToDate(rt.startDate, rt.triggeredCount);
+
+    // Determine category type
+    const category = current.categories.find(c => c.id === rt.categoryId);
+    const categoryType = category?.type || 'expense';
+
+    // Auto-capture current time
+    const now = new Date();
+    const localTime = now.toTimeString().slice(0, 8); // HH:mm:ss
+
+    // Create the transaction
+    const newT: Transaction = {
+      id: generateUUID(),
+      date: targetDate,
+      time: localTime,
+      amount: rt.amount,
+      type: categoryType,
+      accountType: rt.accountType,
+      accountId: rt.accountId,
+      categoryId: rt.categoryId,
+      notes: rt.notes
+    };
+
+    // Update state with new transaction and incremented triggeredCount
+    const nextTriggeredCount = rt.triggeredCount + 1;
+    const isCompleted = nextTriggeredCount >= rt.months;
+
+    this.state.set({
+      ...current,
+      transactions: [...(current.transactions || []), newT],
+      recurringTransactions: (current.recurringTransactions || []).map(r =>
+        r.id === id ? { ...r, triggeredCount: nextTriggeredCount, active: isCompleted ? false : r.active } : r
+      )
+    });
+    this.isDirty.set(true);
+  }
+
+  private addMonthsToDate(dateStr: string, monthsOffset: number): string {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1 + monthsOffset, 1);
+    const maxDays = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    const targetDay = Math.min(day, maxDays);
+    date.setDate(targetDay);
+    
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(targetDay).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   private addAdjustmentTransaction(accountType: Transaction['accountType'], accountId: string, amount: number, notes: string) {

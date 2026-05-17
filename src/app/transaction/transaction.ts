@@ -92,6 +92,28 @@ export class TransactionComponent {
     return all.filter(c => !c.type || c.type === this.newType());
   });
 
+  filteredFilterCategories = computed(() => {
+    const all = this.stateService.state().categories || [];
+    const type = this.filterType();
+    if (!type) return all;
+    return all.filter(c => c.type === type);
+  });
+
+  getCategoriesByType(type: 'income' | 'expense' | 'others-in' | 'others-out') {
+    const all = this.stateService.state().categories || [];
+    return all.filter(c => c.type === type);
+  }
+
+  onFilterTypeChange(type: 'income' | 'expense' | 'others-in' | 'others-out' | '') {
+    this.filterType.set(type);
+    if (this.filterCategoryId()) {
+      const selected = this.stateService.state().categories.find(c => c.id === this.filterCategoryId());
+      if (selected && type && selected.type !== type) {
+        this.filterCategoryId.set('');
+      }
+    }
+  }
+
   // Monthly Summaries
   monthlyIncome = computed(() => {
     return this.transactions()
