@@ -21,7 +21,7 @@
 
   &.placeholder {
     opacity: 0.6;
-    
+
     .report-icon {
       filter: grayscale(1);
     }
@@ -82,7 +82,8 @@
         letter-spacing: 0.05em;
       }
 
-      input[type="month"], input[type="number"] {
+      input[type="month"],
+      input[type="number"] {
         padding: 0.75rem 1rem;
         border-radius: 8px;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -92,20 +93,21 @@
         font-size: 1rem;
         transition: all 0.2s;
         width: 100%;
+        box-sizing: border-box;
 
         &:focus {
           outline: none;
           border-color: #4facfe;
           background: rgba(255, 255, 255, 0.1);
         }
-        
+
         &::-webkit-calendar-picker-indicator,
-        &::-webkit-inner-spin-button, 
+        &::-webkit-inner-spin-button,
         &::-webkit-outer-spin-button {
           filter: invert(1);
           opacity: 0.5;
           cursor: pointer;
-          
+
           &:hover {
             opacity: 1;
           }
@@ -115,16 +117,68 @@
 
     .button-group {
       display: flex;
-      gap: 1rem;
-      
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+
+      .row-group {
+        display: flex;
+        gap: 0.75rem;
+        width: 100%;
+      }
+
       button {
         flex: 1;
-        padding: 0.85rem;
+        padding: 0.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        font-family: inherit;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        span {
+          font-size: 1.1rem;
+          line-height: 1;
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+      }
+
+      .full-width {
+        width: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        color: #0f172a;
+        font-weight: 600;
+
+        &:hover {
+          filter: brightness(1.1);
+          box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+      }
+
+      .btn-action {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f8fafc;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
       }
     }
   }

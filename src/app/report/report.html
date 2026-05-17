@@ -13,45 +13,54 @@
       <div class="report-icon">📊</div>
       <div class="report-details">
         <h2>Monthly Financial Report</h2>
-        <p>A comprehensive report showing income, expenses, and your current asset balances including Banks, Wallets, and Fixed Deposits.</p>
-        
+        <p>A comprehensive report showing income, expenses, and your current asset balances including Banks, Wallets,
+          and Fixed Deposits.</p>
+
         <div class="report-actions">
           <div class="input-group">
             <label>Select Month</label>
             <input type="month" [(ngModel)]="selectedMonth">
           </div>
-          
+
           <div class="button-group">
-            <button class="btn-primary" (click)="generateReport('html')" [disabled]="!selectedMonth">
-              <span>📄</span> HTML
-            </button>
-            <button class="btn-secondary" (click)="generateReport('csv')" [disabled]="!selectedMonth">
-              <span>📊</span> CSV
-            </button>
+            <div class="row-group">
+              <button class="btn-action" (click)="generateReport('view')" [disabled]="!selectedMonth"
+                title="Open report in new tab">
+                <span>👁️</span> View
+              </button>
+              <button class="btn-primary" (click)="generateReport('pdf')" [disabled]="!selectedMonth"
+                title="Download or print as PDF">
+                Generate as PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="report-card glass-card">
       <div class="report-icon">📈</div>
       <div class="report-details">
         <h2>Annual Summary</h2>
         <p>Year-end review of your income and major spending categories for the selected year.</p>
-        
+
         <div class="report-actions">
           <div class="input-group">
             <label>Select Year</label>
             <input type="number" [(ngModel)]="selectedYear" min="2000" max="2100" step="1">
           </div>
-          
+
           <div class="button-group">
-            <button class="btn-primary" (click)="generateAnnualReport('html')" [disabled]="!selectedYear">
-              <span>📄</span> HTML
-            </button>
-            <button class="btn-secondary" (click)="generateAnnualReport('csv')" [disabled]="!selectedYear">
-              <span>📊</span> CSV
-            </button>
+            <div class="row-group">
+              <button class="btn-action" (click)="generateAnnualReport('view')" [disabled]="!selectedYear"
+                title="Open report in new tab">
+                <span>👁️</span> View
+              </button>
+              <button class="btn-primary" (click)="generateAnnualReport('pdf')" [disabled]="!selectedYear"
+                title="Download or print as PDF">
+                Generate as PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
