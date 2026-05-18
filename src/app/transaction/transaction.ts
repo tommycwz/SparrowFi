@@ -320,7 +320,7 @@ export class TransactionComponent {
   exportCSV() {
     const headers = ['Date', 'Type', 'Amount', 'Account Type', 'Account Name', 'Category', 'Notes'];
     const rows = this.transactions().map(t => [
-      t.date,
+      t.date + (t.time ? ' ' + t.time : ''),
       t.type,
       t.amount.toString(),
       t.accountType,
@@ -357,7 +357,7 @@ export class TransactionComponent {
     const lines = text.split('\n');
     if (lines.length <= 1) return;
 
-    let importedCount = 0;
+    const parsedTransactions: any[] = [];
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -385,7 +385,7 @@ export class TransactionComponent {
 
       if (row.length < 7) continue;
 
-      const [date, type, amountStr, accountType, accountName, categoryName, notes] = row;
+      const [dateStr, type, amountStr, accountType, accountName, categoryName, notes] = row;
       const amount = parseFloat(amountStr);
       if (isNaN(amount)) continue;
 
@@ -423,8 +423,28 @@ export class TransactionComponent {
         accId = 'others';
       }
 
-      this.stateService.addTransaction({
+      // Parse date & time
+      let rawDate = dateStr.replace(/^"|"$/g, '').trim();
+      let rawTime = '00:00:00';
+      if (rawDate.includes(' ')) {
+        const parts = rawDate.split(' ');
+        rawDate = parts[0];
+        rawTime = parts[1];
+      } else if (rawDate.includes('T')) {
+        const parts = rawDate.split('T');
+        rawDate = parts[0];
+        rawTime = parts[1];
+      }
+
+      const date = this.normalizeDateToISO(rawDate);
+      let time = rawTime.replace(/^"|"$/g, '').trim();
+      if (!time || !/^\d{2}:\d{2}/.test(time)) {
+        time = '00:00:00';
+      }
+
+      parsedTransactions.push({
         date,
+        time,
         amount,
         type: type as 'income' | 'expense' | 'others-in' | 'others-out',
         accountType: parsedAccType,
@@ -432,9 +452,67 @@ export class TransactionComponent {
         categoryId: categoryId,
         notes: notes.replace(/^"|"$/g, '')
       });
-      importedCount++;
     }
 
-    alert(`Successfully imported ${importedCount} transactions!`);
+    // Sort by date-time ascending
+    parsedTransactions.sort((a, b) => {
+      const dateTimeA = new Date(`${a.date}T${a.time || '00:00:00'}`).getTime();
+      const dateTimeB = new Date(`${b.date}T${b.time || '00:00:00'}`).getTime();
+      return dateTimeA - dateTimeB;
+    });
+
+    // Add sorted transactions to state service
+    for (const t of parsedTransactions) {
+      this.stateService.addTransaction(t);
+    }
+
+    alert(`Successfully imported ${parsedTransactions.length} transactions!`);
+  }
+
+  private normalizeDateToISO(dateStr: string): string {
+    const clean = dateStr.replace(/^"|"$/g, '').trim();
+    if (!clean) return new Date().toISOString().split('T')[0];
+
+    // Handle slashes (e.g. DD/MM/YYYY or YYYY/MM/DD)
+    if (clean.includes('/')) {
+      const parts = clean.split('/');
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          // YYYY/MM/DD
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        } else {
+          // DD/MM/YYYY or MM/DD/YYYY (defaulting to Malaysian DD/MM/YYYY)
+          let day = parseInt(parts[0], 10);
+          let month = parseInt(parts[1], 10);
+          const year = parts[2];
+          if (month > 12) {
+            // Swap if it's MM/DD/YYYY
+            const tmp = day;
+            day = month;
+            month = tmp;
+          }
+          return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+      }
+    }
+
+    // Handle hyphens in DD-MM-YYYY or MM-DD-YYYY
+    if (clean.includes('-')) {
+      const parts = clean.split('-');
+      if (parts.length === 3 && parts[2].length === 4) {
+        let day = parseInt(parts[0], 10);
+        let month = parseInt(parts[1], 10);
+        const year = parts[2];
+        if (month > 12) {
+          const tmp = day;
+          day = month;
+          month = tmp;
+        }
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      }
+    }
+
+    // Default: assume YYYY-MM-DD
+    return clean;
   }
 }

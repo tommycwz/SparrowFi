@@ -22,9 +22,18 @@ export class VersionLogComponent {
 
   entries: VersionEntry[] = [
     {
+      version: '1.2.1',
+      date: '18 May 2026',
+      tag: 'latest',
+      changes: [
+        { type: 'fix', text: 'Normalize date formatting upon CSV import to support multiple regional schemas (DD/MM/YYYY, MM/DD/YYYY, etc.)' },
+        { type: 'improve', text: 'Sort imported transactions in chronological date-time order before merging with database' },
+        { type: 'improve', text: 'Include precise timestamp details in transaction CSV exports while maintaining backward-compatible schema' }
+      ]
+    },
+    {
       version: '1.2.0',
       date: '17 May 2026',
-      tag: 'latest',
       changes: [
         { type: 'new', text: 'Added Monthly Recurring transaction scheduling module' },
         { type: 'new', text: 'Auto-generation trigger supporting month offset date adjustments' },
