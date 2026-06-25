@@ -1,7 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { StateService, Transaction } from '../services/state.service';
+import { StateService, Transaction, FixedDeposit } from '../services/state.service';
 
 type ReportFormat = 'view' | 'pdf' | 'csv';
 
@@ -59,17 +59,19 @@ export class ReportComponent {
     for (const c of (state.cards || [])) cardBalances[c.id] = 0;
 
     for (const t of transactions) {
-      if (t.accountType === 'bank' && bankBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') bankBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') bankBalances[t.accountId] -= t.amount;
-      }
-      if (t.accountType === 'wallet' && walletBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') walletBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') walletBalances[t.accountId] -= t.amount;
-      }
-      if (t.accountType === 'card' && cardBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') cardBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') cardBalances[t.accountId] -= t.amount;
+      if (t.date.slice(0, 7) <= yearMonth) {
+        if (t.accountType === 'bank' && bankBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') bankBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') bankBalances[t.accountId] -= t.amount;
+        }
+        if (t.accountType === 'wallet' && walletBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') walletBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') walletBalances[t.accountId] -= t.amount;
+        }
+        if (t.accountType === 'card' && cardBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') cardBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') cardBalances[t.accountId] -= t.amount;
+        }
       }
     }
 
@@ -89,7 +91,31 @@ export class ReportComponent {
     }
 
     let totalFD = 0;
-    const activeFDs = (state.fixedDeposits || []).filter(fd => fd.status === 'active');
+    const activeFDs = (state.fixedDeposits || []).filter(fd => {
+      // Check if FD was active during / at the end of the selected month
+      if (fd.startDate.slice(0, 7) > yearMonth) {
+        return false;
+      }
+      if (fd.status === 'active') {
+        return true;
+      }
+      // If matured or withdrawn, see if the return transaction happened after the selected month
+      const returnTx = transactions.find(t => 
+        t.amount === fd.amount &&
+        t.type === 'others-in' &&
+        t.accountType === 'bank' &&
+        t.accountId === (fd.toBankId || fd.bankId) &&
+        t.date >= fd.startDate &&
+        (t.notes.includes('Fixed Deposit Matured') || t.notes.includes('Fixed Deposit Withdrawal'))
+      );
+      if (returnTx) {
+        return returnTx.date.slice(0, 7) > yearMonth;
+      }
+      const maturityDate = new Date(fd.startDate);
+      maturityDate.setMonth(maturityDate.getMonth() + fd.months);
+      const maturityYearMonth = maturityDate.toISOString().slice(0, 7);
+      return maturityYearMonth > yearMonth;
+    });
     for (const fd of activeFDs) {
       totalFD += fd.amount;
     }
@@ -374,7 +400,7 @@ export class ReportComponent {
             </div>
             <table>
               <tbody>
-                ${(state.fixedDeposits || []).filter(fd => fd.status === 'active').map(fd => `
+                ${activeFDs.map(fd => `
                   <tr>
                     <td>
                       <div style="font-weight: 600;">${this.getBankName(fd.bankId)}</div>
@@ -383,7 +409,7 @@ export class ReportComponent {
                     <td class="right" style="font-weight: 600; vertical-align: middle;">${formatCurrency(fd.amount)}</td>
                   </tr>
                 `).join('')}
-                ${(state.fixedDeposits || []).filter(fd => fd.status === 'active').length === 0 ? '<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>' : ''}
+                ${activeFDs.length === 0 ? '<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>' : ''}
                 <tr class="asset-total-row">
                   <td>Total Fixed Deposits</td>
                   <td class="right">${formatCurrency(totalFD)}</td>
@@ -517,17 +543,19 @@ export class ReportComponent {
     for (const c of (state.cards || [])) cardBalances[c.id] = 0;
 
     for (const t of transactions) {
-      if (t.accountType === 'bank' && bankBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') bankBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') bankBalances[t.accountId] -= t.amount;
-      }
-      if (t.accountType === 'wallet' && walletBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') walletBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') walletBalances[t.accountId] -= t.amount;
-      }
-      if (t.accountType === 'card' && cardBalances[t.accountId] !== undefined) {
-        if (t.type === 'income' || t.type === 'others-in') cardBalances[t.accountId] += t.amount;
-        if (t.type === 'expense' || t.type === 'others-out') cardBalances[t.accountId] -= t.amount;
+      if (t.date.slice(0, 4) <= yearStr) {
+        if (t.accountType === 'bank' && bankBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') bankBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') bankBalances[t.accountId] -= t.amount;
+        }
+        if (t.accountType === 'wallet' && walletBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') walletBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') walletBalances[t.accountId] -= t.amount;
+        }
+        if (t.accountType === 'card' && cardBalances[t.accountId] !== undefined) {
+          if (t.type === 'income' || t.type === 'others-in') cardBalances[t.accountId] += t.amount;
+          if (t.type === 'expense' || t.type === 'others-out') cardBalances[t.accountId] -= t.amount;
+        }
       }
     }
 
@@ -547,7 +575,31 @@ export class ReportComponent {
     }
 
     let totalFD = 0;
-    const activeFDs = (state.fixedDeposits || []).filter(fd => fd.status === 'active');
+    const activeFDs = (state.fixedDeposits || []).filter(fd => {
+      // Check if FD was active during / at the end of the selected year
+      if (fd.startDate.slice(0, 4) > yearStr) {
+        return false;
+      }
+      if (fd.status === 'active') {
+        return true;
+      }
+      // If matured or withdrawn, see if the return transaction happened after the selected year
+      const returnTx = transactions.find(t => 
+        t.amount === fd.amount &&
+        t.type === 'others-in' &&
+        t.accountType === 'bank' &&
+        t.accountId === (fd.toBankId || fd.bankId) &&
+        t.date >= fd.startDate &&
+        (t.notes.includes('Fixed Deposit Matured') || t.notes.includes('Fixed Deposit Withdrawal'))
+      );
+      if (returnTx) {
+        return returnTx.date.slice(0, 4) > yearStr;
+      }
+      const maturityDate = new Date(fd.startDate);
+      maturityDate.setMonth(maturityDate.getMonth() + fd.months);
+      const maturityYearStr = maturityDate.getFullYear().toString();
+      return maturityYearStr > yearStr;
+    });
     for (const fd of activeFDs) {
       totalFD += fd.amount;
     }
@@ -856,7 +908,7 @@ export class ReportComponent {
             </div>
             <table>
               <tbody>
-                ${(state.fixedDeposits || []).filter(fd => fd.status === 'active').map(fd => `
+                ${activeFDs.map(fd => `
                   <tr>
                     <td>
                       <div style="font-weight: 600;">${this.getBankName(fd.bankId)}</div>
@@ -865,7 +917,7 @@ export class ReportComponent {
                     <td class="right" style="font-weight: 600; vertical-align: middle;">${formatCurrency(fd.amount)}</td>
                   </tr>
                 `).join('')}
-                ${(state.fixedDeposits || []).filter(fd => fd.status === 'active').length === 0 ? '<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>' : ''}
+                ${activeFDs.length === 0 ? '<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>' : ''}
                 <tr class="asset-total-row">
                   <td>Total Fixed Deposits</td>
                   <td class="right">${formatCurrency(totalFD)}</td>
