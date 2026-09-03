@@ -60,7 +60,7 @@ export class FileService {
     });
   }
 
-  exportSpwFile(state: any, filename: string = 'data.spw'): void {
+  async exportSpwFile(state: any, filename: string = 'data.spw'): Promise<void> {
     try {
       const jsonString = JSON.stringify(state);
       const payloadBytes = new TextEncoder().encode(jsonString);
@@ -74,7 +74,7 @@ export class FileService {
       fileBytes.set(headerBytes, 0);
       fileBytes.set(payloadBytes, headerBytes.length);
 
-      this.triggerDownload(fileBytes, filename);
+      await this.saveOrShareFile(fileBytes, filename);
     } catch (error) {
       console.error('Error exporting .spw file', error);
       throw error;
@@ -112,8 +112,7 @@ export class FileService {
   }
 
   /**
-   * Export using a caller-supplied recovery key (used when re-exporting after setup
-   * so the shown recovery key matches what's baked into the file).
+   * Export using a caller-supplied recovery key.
    */
   async exportSpwFileEncryptedWithRecovery(
     state: any,
@@ -151,7 +150,7 @@ export class FileService {
       { name: 'AES-GCM', iv: dataIv }, masterCryptoKey, payloadBytes
     ));
 
-    // Assemble: 4 + 16 + 12 + 16 + 12 + 48 + 48 + 12 = 168-byte header
+    // Assemble header + payload
     const magic      = new TextEncoder().encode(this.MAGIC_HEADER_V3);
     const fileBytes  = new Uint8Array(168 + encryptedPayload.byteLength);
     let off = 0;
@@ -165,13 +164,11 @@ export class FileService {
     fileBytes.set(dataIv,            off); off += 12;
     fileBytes.set(encryptedPayload,  off);
 
-    this.triggerDownload(fileBytes, filename);
+    await this.saveOrShareFile(fileBytes, filename);
   }
 
   /**
    * Parse a password-protected SPW3 file.
-   * @param credential  The password or recovery key entered by the user.
-   * @param isRecovery  True when `credential` is a recovery key.
    */
   async parseSpw3File(file: File, credential: string, isRecovery: boolean = false): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -197,8 +194,8 @@ export class FileService {
           const dataIv            = bytes.slice(off, off + 12); off += 12;
           const encryptedPayload  = bytes.slice(off);
 
-          const salt    = isRecovery ? recoverySalt      : passwordSalt;
-          const iv      = isRecovery ? recoveryIv        : passwordIv;
+          const salt    = isRecovery ? recoverySalt    : passwordSalt;
+          const iv      = isRecovery ? recoveryIv      : passwordIv;
           const wrapped = isRecovery ? wrappedByRecovery : wrappedByPassword;
 
           const derivedKey = await this.deriveKey(credential, salt);
@@ -257,15 +254,54 @@ export class FileService {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const bytes = crypto.getRandomValues(new Uint8Array(18));
     const raw   = Array.from(bytes).map(b => chars[b % chars.length]).join('');
-    // Format as XXXXXX-XXXXXX-XXXXXX
     return `${raw.slice(0, 6)}-${raw.slice(6, 12)}-${raw.slice(12, 18)}`;
   }
 
-  private triggerDownload(bytes: Uint8Array, filename: string): void {
+  /**
+   * Cross-platform file exporter.
+   * Handles Desktop File System API, Mobile Share Drawer, and Browser Downloads.
+   */
+  private async saveOrShareFile(bytes: Uint8Array, filename: string): Promise<void> {
+    // ArrayBuffer cast prevents TypeScript ArrayBufferLike / SharedArrayBuffer TS2322 errors
     const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/octet-stream' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
+    const file = new File([blob], filename, { type: 'application/octet-stream' });
+
+    // 1. Mobile Web Share API (iOS Safari & Android Chrome)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: filename
+        });
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return; // User closed share sheet
+      }
+    }
+
+    // 2. Desktop File System Access API (Windows / Chrome / Edge)
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: 'SparrowFi File',
+            accept: { 'application/octet-stream': ['.spw'] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch (err: any) {
+        if (err.name === 'AbortError') return; // User canceled save dialog
+      }
+    }
+
+    // 3. Fallback standard browser download link
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();

@@ -22,9 +22,16 @@ export class VersionLogComponent {
 
   entries: VersionEntry[] = [
     {
+      version: '1.3.0',
+      date: '03 Sept 2026',
+      tag: 'latest',
+      changes: [
+        { type: 'improve', text: 'Fix for mobile file reading issues' },
+      ]
+    }, 
+    {
       version: '1.2.1',
       date: '18 May 2026',
-      tag: 'latest',
       changes: [
         { type: 'fix', text: 'Normalize date formatting upon CSV import to support multiple regional schemas (DD/MM/YYYY, MM/DD/YYYY, etc.)' },
         { type: 'improve', text: 'Sort imported transactions in chronological date-time order before merging with database' },
