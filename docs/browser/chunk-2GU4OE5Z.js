@@ -1,22 +1,22 @@
-import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js";import{b as X}from"./chunk-B345O4L3.js";import{Ca as B,Ga as j,Ib as L,Jb as W,Qa as F,Ra as u,Sa as m,Xa as N,eb as h,ib as A,jb as T,kb as D,lb as R,ta as k}from"./chunk-NO5MBLO3.js";var q=class E{constructor(c){this.stateService=c}stateService;selectedMonth=new Date().toISOString().slice(0,7);selectedYear=new Date().getFullYear();generateReport(c){if(!this.selectedMonth){alert("Please select a month and year.");return}let a=this.stateService.state(),n=a.transactions||[],v=this.selectedMonth,y=n.filter(e=>e.date.startsWith(v)),d={},l=0,p={},g=0;for(let e of y)e.type==="income"?(d[e.categoryId]=(d[e.categoryId]||0)+e.amount,l+=e.amount):e.type==="expense"&&(p[e.categoryId]=(p[e.categoryId]||0)+e.amount,g+=e.amount);let x={},C={},b={};for(let e of a.banks)x[e.id]=0;for(let e of a.wallets||[])C[e.id]=0;for(let e of a.cards||[])b[e.id]=0;for(let e of n)e.accountType==="bank"&&x[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(x[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(x[e.accountId]-=e.amount)),e.accountType==="wallet"&&C[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(C[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(C[e.accountId]-=e.amount)),e.accountType==="card"&&b[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(b[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(b[e.accountId]-=e.amount));let M=0;for(let e of a.banks)M+=x[e.id];let O=0;for(let e of a.wallets||[])O+=C[e.id];let f=0;for(let e of a.cards||[])f+=b[e.id];let $=0,S=(a.fixedDeposits||[]).filter(e=>e.status==="active");for(let e of S)$+=e.amount;if(c==="csv"){let e=[];e.push(`Monthly Financial Report,${v}`),e.push(""),e.push("INCOME ANALYSIS"),e.push("Category,Amount,Percentage");for(let i of Object.keys(d)){let t=l>0?d[i]/l*100:0;e.push(`"${this.getCategoryName(i)}",${d[i].toFixed(2)},${t.toFixed(1)}%`)}e.push(`"TOTAL INCOME",${l.toFixed(2)},100.0%`),e.push(""),e.push("EXPENSES ANALYSIS"),e.push("Category,Amount,Percentage");for(let i of Object.keys(p)){let t=g>0?p[i]/g*100:0;e.push(`"${this.getCategoryName(i)}",${p[i].toFixed(2)},${t.toFixed(1)}%`)}e.push(`"TOTAL EXPENSES",${g.toFixed(2)},100.0%`),e.push(""),e.push(`"NET CASH FLOW",${(l-g).toFixed(2)}`),e.push(""),e.push("CURRENT ASSET BALANCES"),e.push("Banks"),e.push("Account Name,Balance");for(let i of a.banks)e.push(`"${i.name}",${x[i.id].toFixed(2)}`);e.push(`"Total Bank Capital",${M.toFixed(2)}`),e.push(""),e.push("Wallets"),e.push("Account Name,Balance");for(let i of a.wallets||[])e.push(`"${i.name}",${C[i.id].toFixed(2)}`);e.push(`"Total Wallet Capital",${O.toFixed(2)}`),e.push(""),e.push("Credit Cards"),e.push("Account Name,Outstanding");for(let i of a.cards||[])e.push(`"${i.name}",${b[i.id].toFixed(2)}`);e.push(`"Total Credit Card Outstanding",${f.toFixed(2)}`),e.push(""),e.push("Fixed Deposits (Active)"),e.push("Bank,Principal,Maturity Date");for(let i of S)e.push(`"${this.getBankName(i.bankId)}",${i.amount.toFixed(2)},${this.getMaturityDate(i).toISOString().split("T")[0]}`);e.push(`"Total Active FDs",${$.toFixed(2)}`),e.push(""),e.push(`"NET ASSET BALANCE",${(M+O+$+f).toFixed(2)}`),this.downloadFile(e.join(`
-`),`Financial_Report_${v}.csv`,"text/csv;charset=utf-8;")}else{let e=this.stateService.currencySymbol(),i=s=>{let _=s<0,r=Math.abs(s).toFixed(2);return _?`-${e}${r}`:`${e}${r}`},t=Object.keys(d).map(s=>({label:this.getCategoryName(s),value:Number(d[s].toFixed(2)),color:this.getCategoryColor(s)})),o=Object.keys(p).map(s=>({label:this.getCategoryName(s),value:Number(p[s].toFixed(2)),color:this.getCategoryColor(s)})),w=this.getHtmlTemplate(`Monthly Financial Report - ${v}`);w+=`
+import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js";import{b as X}from"./chunk-B345O4L3.js";import{Ca as B,Ga as j,Ib as W,Jb as L,Qa as F,Ra as h,Sa as b,Xa as N,eb as f,ib as T,jb as D,kb as A,lb as R,ta as S}from"./chunk-NO5MBLO3.js";var q=class E{constructor(l){this.stateService=l}stateService;selectedMonth=new Date().toISOString().slice(0,7);selectedYear=new Date().getFullYear();generateReport(l){if(!this.selectedMonth){alert("Please select a month and year.");return}let a=this.stateService.state(),n=a.transactions||[],m=this.selectedMonth,C=n.filter(e=>e.date.startsWith(m)),d={},p=0,g={},u=0;for(let e of C)e.type==="income"?(d[e.categoryId]=(d[e.categoryId]||0)+e.amount,p+=e.amount):e.type==="expense"&&(g[e.categoryId]=(g[e.categoryId]||0)+e.amount,u+=e.amount);let M={},O={},v={};for(let e of a.banks)M[e.id]=0;for(let e of a.wallets||[])O[e.id]=0;for(let e of a.cards||[])v[e.id]=0;for(let e of n)e.date.slice(0,7)<=m&&(e.accountType==="bank"&&M[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(M[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(M[e.accountId]-=e.amount)),e.accountType==="wallet"&&O[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(O[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(O[e.accountId]-=e.amount)),e.accountType==="card"&&v[e.accountId]!==void 0&&((e.type==="income"||e.type==="others-in")&&(v[e.accountId]+=e.amount),(e.type==="expense"||e.type==="others-out")&&(v[e.accountId]-=e.amount)));let w=0;for(let e of a.banks)w+=M[e.id];let _=0;for(let e of a.wallets||[])_+=O[e.id];let x=0;for(let e of a.cards||[])x+=v[e.id];let $=0,P=(a.fixedDeposits||[]).filter(e=>{if(e.startDate.slice(0,7)>m)return!1;if(e.status==="active")return!0;let r=n.find(c=>c.amount===e.amount&&c.type==="others-in"&&c.accountType==="bank"&&c.accountId===(e.toBankId||e.bankId)&&c.date>=e.startDate&&(c.notes.includes("Fixed Deposit Matured")||c.notes.includes("Fixed Deposit Withdrawal")));if(r)return r.date.slice(0,7)>m;let t=new Date(e.startDate);return t.setMonth(t.getMonth()+e.months),t.toISOString().slice(0,7)>m});for(let e of P)$+=e.amount;if(l==="csv"){let e=[];e.push(`Monthly Financial Report,${m}`),e.push(""),e.push("INCOME ANALYSIS"),e.push("Category,Amount,Percentage");for(let r of Object.keys(d)){let t=p>0?d[r]/p*100:0;e.push(`"${this.getCategoryName(r)}",${d[r].toFixed(2)},${t.toFixed(1)}%`)}e.push(`"TOTAL INCOME",${p.toFixed(2)},100.0%`),e.push(""),e.push("EXPENSES ANALYSIS"),e.push("Category,Amount,Percentage");for(let r of Object.keys(g)){let t=u>0?g[r]/u*100:0;e.push(`"${this.getCategoryName(r)}",${g[r].toFixed(2)},${t.toFixed(1)}%`)}e.push(`"TOTAL EXPENSES",${u.toFixed(2)},100.0%`),e.push(""),e.push(`"NET CASH FLOW",${(p-u).toFixed(2)}`),e.push(""),e.push("CURRENT ASSET BALANCES"),e.push("Banks"),e.push("Account Name,Balance");for(let r of a.banks)e.push(`"${r.name}",${M[r.id].toFixed(2)}`);e.push(`"Total Bank Capital",${w.toFixed(2)}`),e.push(""),e.push("Wallets"),e.push("Account Name,Balance");for(let r of a.wallets||[])e.push(`"${r.name}",${O[r.id].toFixed(2)}`);e.push(`"Total Wallet Capital",${_.toFixed(2)}`),e.push(""),e.push("Credit Cards"),e.push("Account Name,Outstanding");for(let r of a.cards||[])e.push(`"${r.name}",${v[r.id].toFixed(2)}`);e.push(`"Total Credit Card Outstanding",${x.toFixed(2)}`),e.push(""),e.push("Fixed Deposits (Active)"),e.push("Bank,Principal,Maturity Date");for(let r of P)e.push(`"${this.getBankName(r.bankId)}",${r.amount.toFixed(2)},${this.getMaturityDate(r).toISOString().split("T")[0]}`);e.push(`"Total Active FDs",${$.toFixed(2)}`),e.push(""),e.push(`"NET ASSET BALANCE",${(w+_+$+x).toFixed(2)}`),this.downloadFile(e.join(`
+`),`Financial_Report_${m}.csv`,"text/csv;charset=utf-8;")}else{let e=this.stateService.currencySymbol(),r=s=>{let y=s<0,i=Math.abs(s).toFixed(2);return y?`-${e}${i}`:`${e}${i}`},t=Object.keys(d).map(s=>({label:this.getCategoryName(s),value:Number(d[s].toFixed(2)),color:this.getCategoryColor(s)})),o=Object.keys(g).map(s=>({label:this.getCategoryName(s),value:Number(g[s].toFixed(2)),color:this.getCategoryColor(s)})),c=this.getHtmlTemplate(`Monthly Financial Report - ${m}`);c+=`
         <div class="header">
           <h1>Monthly Financial Report</h1>
-          <p>For the period of <strong>${v}</strong></p>
+          <p>For the period of <strong>${m}</strong></p>
         </div>
 
         <div class="summary-cards">
           <div class="card">
             <h3>Total Income</h3>
-            <div class="amount success">${i(l)}</div>
+            <div class="amount success">${r(p)}</div>
           </div>
           <div class="card">
             <h3>Total Expenses</h3>
-            <div class="amount danger">${i(g)}</div>
+            <div class="amount danger">${r(u)}</div>
           </div>
           <div class="card highlight">
             <h3>Net Cash Flow</h3>
-            <div class="amount ${l>=g?"success":"danger"}">${i(l-g)}</div>
+            <div class="amount ${p>=u?"success":"danger"}">${r(p-u)}</div>
           </div>
         </div>
 
@@ -35,23 +35,23 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                 </tr>
               </thead>
               <tbody>
-                ${Object.keys(d).map(s=>{let _=l>0?d[s]/l*100:0;return`
+                ${Object.keys(d).map(s=>{let y=p>0?d[s]/p*100:0;return`
                     <tr>
                       <td>
                         <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(s)}</div>
                         <div class="progress-container">
-                          <div class="progress-fill" style="width: ${_}%; background-color: ${this.getCategoryColor(s)}"></div>
+                          <div class="progress-fill" style="width: ${y}%; background-color: ${this.getCategoryColor(s)}"></div>
                         </div>
                       </td>
-                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${_.toFixed(1)}%</td>
-                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--success);">${i(d[s])}</td>
+                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${y.toFixed(1)}%</td>
+                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--success);">${r(d[s])}</td>
                     </tr>
                   `}).join("")}
                 ${Object.keys(d).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No income transactions this month</td></tr>':""}
                 <tr class="total-row">
                   <td>Total Income</td>
                   <td class="right">100%</td>
-                  <td class="right">${i(l)}</td>
+                  <td class="right">${r(p)}</td>
                 </tr>
               </tbody>
             </table>
@@ -70,23 +70,23 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                 </tr>
               </thead>
               <tbody>
-                ${Object.keys(p).map(s=>{let _=g>0?p[s]/g*100:0;return`
+                ${Object.keys(g).map(s=>{let y=u>0?g[s]/u*100:0;return`
                     <tr>
                       <td>
                         <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(s)}</div>
                         <div class="progress-container">
-                          <div class="progress-fill" style="width: ${_}%; background-color: ${this.getCategoryColor(s)}"></div>
+                          <div class="progress-fill" style="width: ${y}%; background-color: ${this.getCategoryColor(s)}"></div>
                         </div>
                       </td>
-                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${_.toFixed(1)}%</td>
-                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--danger);">${i(p[s])}</td>
+                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${y.toFixed(1)}%</td>
+                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--danger);">${r(g[s])}</td>
                     </tr>
                   `}).join("")}
-                ${Object.keys(p).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No expense transactions this month</td></tr>':""}
+                ${Object.keys(g).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No expense transactions this month</td></tr>':""}
                 <tr class="total-row">
                   <td>Total Expenses</td>
                   <td class="right">100%</td>
-                  <td class="right">${i(g)}</td>
+                  <td class="right">${r(u)}</td>
                 </tr>
               </tbody>
             </table>
@@ -111,13 +111,13 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                         <span>${s.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600;">${i(x[s.id])}</td>
+                    <td class="right" style="font-weight: 600;">${r(M[s.id])}</td>
                   </tr>
                 `).join("")}
                 ${a.banks.length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No banks added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Bank Capital</td>
-                  <td class="right">${i(M)}</td>
+                  <td class="right">${r(w)}</td>
                 </tr>
               </tbody>
             </table>
@@ -139,13 +139,13 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                         <span>${s.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600;">${i(C[s.id])}</td>
+                    <td class="right" style="font-weight: 600;">${r(O[s.id])}</td>
                   </tr>
                 `).join("")}
                 ${(a.wallets||[]).length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No wallets added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Wallet Capital</td>
-                  <td class="right">${i(O)}</td>
+                  <td class="right">${r(_)}</td>
                 </tr>
               </tbody>
             </table>
@@ -167,15 +167,15 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                         <span>${s.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600; color: ${b[s.id]<0?"var(--danger)":"var(--text)"};">
-                      ${i(b[s.id])}
+                    <td class="right" style="font-weight: 600; color: ${v[s.id]<0?"var(--danger)":"var(--text)"};">
+                      ${r(v[s.id])}
                     </td>
                   </tr>
                 `).join("")}
                 ${(a.cards||[]).length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No credit cards added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Outstanding</td>
-                  <td class="right" style="color: ${f<0?"var(--danger)":"var(--text)"};">${i(f)}</td>
+                  <td class="right" style="color: ${x<0?"var(--danger)":"var(--text)"};">${r(x)}</td>
                 </tr>
               </tbody>
             </table>
@@ -189,19 +189,19 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
             </div>
             <table>
               <tbody>
-                ${(a.fixedDeposits||[]).filter(s=>s.status==="active").map(s=>`
+                ${P.map(s=>`
                   <tr>
                     <td>
                       <div style="font-weight: 600;">${this.getBankName(s.bankId)}</div>
                       <div style="font-size: 0.8rem; color: var(--text-muted);">Matures: ${this.getMaturityDate(s).toISOString().split("T")[0]} (${s.percentage}%)</div>
                     </td>
-                    <td class="right" style="font-weight: 600; vertical-align: middle;">${i(s.amount)}</td>
+                    <td class="right" style="font-weight: 600; vertical-align: middle;">${r(s.amount)}</td>
                   </tr>
                 `).join("")}
-                ${(a.fixedDeposits||[]).filter(s=>s.status==="active").length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>':""}
+                ${P.length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Fixed Deposits</td>
-                  <td class="right">${i($)}</td>
+                  <td class="right">${r($)}</td>
                 </tr>
               </tbody>
             </table>
@@ -211,20 +211,20 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
         <div class="net-assets-summary">
           <div class="summary-line">
             <span>Total Liquid Assets (Banks + Wallets)</span>
-            <strong>${i(M+O)}</strong>
+            <strong>${r(w+_)}</strong>
           </div>
           <div class="summary-line">
             <span>Total Fixed Assets (Fixed Deposits)</span>
-            <strong>+ ${i($)}</strong>
+            <strong>+ ${r($)}</strong>
           </div>
           <div class="summary-line">
             <span>Total Credit Card Liabilities</span>
-            <strong style="color: var(--danger);">${i(f)}</strong>
+            <strong style="color: var(--danger);">${r(x)}</strong>
           </div>
           <div class="summary-line grand-total">
             <span>Net Asset Balance</span>
-            <span class="${M+O+$+f>=0?"success":"danger"}">
-              ${i(M+O+$+f)}
+            <span class="${w+_+$+x>=0?"success":"danger"}">
+              ${r(w+_+$+x)}
             </span>
           </div>
         </div>
@@ -288,8 +288,8 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
           drawChart('expenseChart', expenseData);
         <\/script>
       </body>
-      </html>`,this.openHtmlWindow(w,c==="pdf")}}generateAnnualReport(c){if(!this.selectedYear){alert("Please select a year.");return}let a=this.selectedYear.toString(),n=this.stateService.state(),v=n.transactions||[],y=v.filter(t=>t.date.startsWith(a)),d={},l=0,p={},g=0;for(let t of y)t.type==="income"?(d[t.categoryId]=(d[t.categoryId]||0)+t.amount,l+=t.amount):t.type==="expense"&&(p[t.categoryId]=(p[t.categoryId]||0)+t.amount,g+=t.amount);let x={},C={},b={};for(let t of n.banks)x[t.id]=0;for(let t of n.wallets||[])C[t.id]=0;for(let t of n.cards||[])b[t.id]=0;for(let t of v)t.accountType==="bank"&&x[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(x[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(x[t.accountId]-=t.amount)),t.accountType==="wallet"&&C[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(C[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(C[t.accountId]-=t.amount)),t.accountType==="card"&&b[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(b[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(b[t.accountId]-=t.amount));let M=0;for(let t of n.banks)M+=x[t.id];let O=0;for(let t of n.wallets||[])O+=C[t.id];let f=0;for(let t of n.cards||[])f+=b[t.id];let $=0,S=(n.fixedDeposits||[]).filter(t=>t.status==="active");for(let t of S)$+=t.amount;let e=Array(12).fill(0),i=Array(12).fill(0);for(let t of y){let o=t.date.split("-");if(o.length>=2){let w=parseInt(o[1],10)-1;w>=0&&w<12&&(t.type==="income"?e[w]+=t.amount:t.type==="expense"&&(i[w]+=t.amount))}}if(c==="csv"){let t=[];t.push(`Annual Summary Report,${a}`),t.push(""),t.push("INCOME ANALYSIS"),t.push("Category,Amount,Percentage");for(let o of Object.keys(d)){let w=l>0?d[o]/l*100:0;t.push(`"${this.getCategoryName(o)}",${d[o].toFixed(2)},${w.toFixed(1)}%`)}t.push(`"TOTAL INCOME",${l.toFixed(2)},100.0%`),t.push(""),t.push("EXPENSES ANALYSIS"),t.push("Category,Amount,Percentage");for(let o of Object.keys(p)){let w=g>0?p[o]/g*100:0;t.push(`"${this.getCategoryName(o)}",${p[o].toFixed(2)},${w.toFixed(1)}%`)}t.push(`"TOTAL EXPENSES",${g.toFixed(2)},100.0%`),t.push(""),t.push(`"NET CASH FLOW",${(l-g).toFixed(2)}`),t.push(""),t.push("CURRENT ASSET BALANCES"),t.push("Banks"),t.push("Account Name,Balance");for(let o of n.banks)t.push(`"${o.name}",${x[o.id].toFixed(2)}`);t.push(`"Total Bank Capital",${M.toFixed(2)}`),t.push(""),t.push("Wallets"),t.push("Account Name,Balance");for(let o of n.wallets||[])t.push(`"${o.name}",${C[o.id].toFixed(2)}`);t.push(`"Total Wallet Capital",${O.toFixed(2)}`),t.push(""),t.push("Credit Cards"),t.push("Account Name,Outstanding");for(let o of n.cards||[])t.push(`"${o.name}",${b[o.id].toFixed(2)}`);t.push(`"Total Credit Card Outstanding",${f.toFixed(2)}`),t.push(""),t.push("Fixed Deposits (Active)"),t.push("Bank,Principal,Maturity Date");for(let o of S)t.push(`"${this.getBankName(o.bankId)}",${o.amount.toFixed(2)},${this.getMaturityDate(o).toISOString().split("T")[0]}`);t.push(`"Total Active FDs",${$.toFixed(2)}`),t.push(""),t.push(`"NET ASSET BALANCE",${(M+O+$+f).toFixed(2)}`),this.downloadFile(t.join(`
-`),`Annual_Summary_${a}.csv`,"text/csv;charset=utf-8;")}else{let t=this.stateService.currencySymbol(),o=r=>{let P=r<0,I=Math.abs(r).toFixed(2);return P?`-${t}${I}`:`${t}${I}`},w=Object.keys(d).map(r=>({label:this.getCategoryName(r),value:Number(d[r].toFixed(2)),color:this.getCategoryColor(r)})),s=Object.keys(p).map(r=>({label:this.getCategoryName(r),value:Number(p[r].toFixed(2)),color:this.getCategoryColor(r)})),_=this.getHtmlTemplate(`Annual Summary - ${a}`);_+=`
+      </html>`,this.openHtmlWindow(c,l==="pdf")}}generateAnnualReport(l){if(!this.selectedYear){alert("Please select a year.");return}let a=this.selectedYear.toString(),n=this.stateService.state(),m=n.transactions||[],C=m.filter(t=>t.date.startsWith(a)),d={},p=0,g={},u=0;for(let t of C)t.type==="income"?(d[t.categoryId]=(d[t.categoryId]||0)+t.amount,p+=t.amount):t.type==="expense"&&(g[t.categoryId]=(g[t.categoryId]||0)+t.amount,u+=t.amount);let M={},O={},v={};for(let t of n.banks)M[t.id]=0;for(let t of n.wallets||[])O[t.id]=0;for(let t of n.cards||[])v[t.id]=0;for(let t of m)t.date.slice(0,4)<=a&&(t.accountType==="bank"&&M[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(M[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(M[t.accountId]-=t.amount)),t.accountType==="wallet"&&O[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(O[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(O[t.accountId]-=t.amount)),t.accountType==="card"&&v[t.accountId]!==void 0&&((t.type==="income"||t.type==="others-in")&&(v[t.accountId]+=t.amount),(t.type==="expense"||t.type==="others-out")&&(v[t.accountId]-=t.amount)));let w=0;for(let t of n.banks)w+=M[t.id];let _=0;for(let t of n.wallets||[])_+=O[t.id];let x=0;for(let t of n.cards||[])x+=v[t.id];let $=0,P=(n.fixedDeposits||[]).filter(t=>{if(t.startDate.slice(0,4)>a)return!1;if(t.status==="active")return!0;let o=m.find(y=>y.amount===t.amount&&y.type==="others-in"&&y.accountType==="bank"&&y.accountId===(t.toBankId||t.bankId)&&y.date>=t.startDate&&(y.notes.includes("Fixed Deposit Matured")||y.notes.includes("Fixed Deposit Withdrawal")));if(o)return o.date.slice(0,4)>a;let c=new Date(t.startDate);return c.setMonth(c.getMonth()+t.months),c.getFullYear().toString()>a});for(let t of P)$+=t.amount;let e=Array(12).fill(0),r=Array(12).fill(0);for(let t of C){let o=t.date.split("-");if(o.length>=2){let c=parseInt(o[1],10)-1;c>=0&&c<12&&(t.type==="income"?e[c]+=t.amount:t.type==="expense"&&(r[c]+=t.amount))}}if(l==="csv"){let t=[];t.push(`Annual Summary Report,${a}`),t.push(""),t.push("INCOME ANALYSIS"),t.push("Category,Amount,Percentage");for(let o of Object.keys(d)){let c=p>0?d[o]/p*100:0;t.push(`"${this.getCategoryName(o)}",${d[o].toFixed(2)},${c.toFixed(1)}%`)}t.push(`"TOTAL INCOME",${p.toFixed(2)},100.0%`),t.push(""),t.push("EXPENSES ANALYSIS"),t.push("Category,Amount,Percentage");for(let o of Object.keys(g)){let c=u>0?g[o]/u*100:0;t.push(`"${this.getCategoryName(o)}",${g[o].toFixed(2)},${c.toFixed(1)}%`)}t.push(`"TOTAL EXPENSES",${u.toFixed(2)},100.0%`),t.push(""),t.push(`"NET CASH FLOW",${(p-u).toFixed(2)}`),t.push(""),t.push("CURRENT ASSET BALANCES"),t.push("Banks"),t.push("Account Name,Balance");for(let o of n.banks)t.push(`"${o.name}",${M[o.id].toFixed(2)}`);t.push(`"Total Bank Capital",${w.toFixed(2)}`),t.push(""),t.push("Wallets"),t.push("Account Name,Balance");for(let o of n.wallets||[])t.push(`"${o.name}",${O[o.id].toFixed(2)}`);t.push(`"Total Wallet Capital",${_.toFixed(2)}`),t.push(""),t.push("Credit Cards"),t.push("Account Name,Outstanding");for(let o of n.cards||[])t.push(`"${o.name}",${v[o.id].toFixed(2)}`);t.push(`"Total Credit Card Outstanding",${x.toFixed(2)}`),t.push(""),t.push("Fixed Deposits (Active)"),t.push("Bank,Principal,Maturity Date");for(let o of P)t.push(`"${this.getBankName(o.bankId)}",${o.amount.toFixed(2)},${this.getMaturityDate(o).toISOString().split("T")[0]}`);t.push(`"Total Active FDs",${$.toFixed(2)}`),t.push(""),t.push(`"NET ASSET BALANCE",${(w+_+$+x).toFixed(2)}`),this.downloadFile(t.join(`
+`),`Annual_Summary_${a}.csv`,"text/csv;charset=utf-8;")}else{let t=this.stateService.currencySymbol(),o=i=>{let k=i<0,I=Math.abs(i).toFixed(2);return k?`-${t}${I}`:`${t}${I}`},c=Object.keys(d).map(i=>({label:this.getCategoryName(i),value:Number(d[i].toFixed(2)),color:this.getCategoryColor(i)})),s=Object.keys(g).map(i=>({label:this.getCategoryName(i),value:Number(g[i].toFixed(2)),color:this.getCategoryColor(i)})),y=this.getHtmlTemplate(`Annual Summary - ${a}`);y+=`
         <div class="header">
           <h1>Annual Financial Summary</h1>
           <p>For the year of <strong>${a}</strong></p>
@@ -298,15 +298,15 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
         <div class="summary-cards">
           <div class="card">
             <h3>Total Income</h3>
-            <div class="amount success">${o(l)}</div>
+            <div class="amount success">${o(p)}</div>
           </div>
           <div class="card">
             <h3>Total Expenses</h3>
-            <div class="amount danger">${o(g)}</div>
+            <div class="amount danger">${o(u)}</div>
           </div>
           <div class="card highlight">
             <h3>Net Cash Flow</h3>
-            <div class="amount ${l>=g?"success":"danger"}">${o(l-g)}</div>
+            <div class="amount ${p>=u?"success":"danger"}">${o(p-u)}</div>
           </div>
         </div>
 
@@ -331,23 +331,23 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                 </tr>
               </thead>
               <tbody>
-                ${Object.keys(d).map(r=>{let P=l>0?d[r]/l*100:0;return`
+                ${Object.keys(d).map(i=>{let k=p>0?d[i]/p*100:0;return`
                     <tr>
                       <td>
-                        <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(r)}</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(i)}</div>
                         <div class="progress-container">
-                          <div class="progress-fill" style="width: ${P}%; background-color: ${this.getCategoryColor(r)}"></div>
+                          <div class="progress-fill" style="width: ${k}%; background-color: ${this.getCategoryColor(i)}"></div>
                         </div>
                       </td>
-                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${P.toFixed(1)}%</td>
-                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--success);">${o(d[r])}</td>
+                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${k.toFixed(1)}%</td>
+                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--success);">${o(d[i])}</td>
                     </tr>
                   `}).join("")}
                 ${Object.keys(d).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No income transactions this year</td></tr>':""}
                 <tr class="total-row">
                   <td>Total Income</td>
                   <td class="right">100%</td>
-                  <td class="right">${o(l)}</td>
+                  <td class="right">${o(p)}</td>
                 </tr>
               </tbody>
             </table>
@@ -366,23 +366,23 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
                 </tr>
               </thead>
               <tbody>
-                ${Object.keys(p).map(r=>{let P=g>0?p[r]/g*100:0;return`
+                ${Object.keys(g).map(i=>{let k=u>0?g[i]/u*100:0;return`
                     <tr>
                       <td>
-                        <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(r)}</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">${this.getCategoryName(i)}</div>
                         <div class="progress-container">
-                          <div class="progress-fill" style="width: ${P}%; background-color: ${this.getCategoryColor(r)}"></div>
+                          <div class="progress-fill" style="width: ${k}%; background-color: ${this.getCategoryColor(i)}"></div>
                         </div>
                       </td>
-                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${P.toFixed(1)}%</td>
-                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--danger);">${o(p[r])}</td>
+                      <td class="right" style="vertical-align: middle; color: var(--text-muted); font-size: 0.9rem;">${k.toFixed(1)}%</td>
+                      <td class="right" style="vertical-align: middle; font-weight: 600; color: var(--danger);">${o(g[i])}</td>
                     </tr>
                   `}).join("")}
-                ${Object.keys(p).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No expense transactions this year</td></tr>':""}
+                ${Object.keys(g).length===0?'<tr><td colspan="3" style="color: var(--text-muted); text-align: center; padding: 2rem;">No expense transactions this year</td></tr>':""}
                 <tr class="total-row">
                   <td>Total Expenses</td>
                   <td class="right">100%</td>
-                  <td class="right">${o(g)}</td>
+                  <td class="right">${o(u)}</td>
                 </tr>
               </tbody>
             </table>
@@ -399,21 +399,21 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
             </div>
             <table>
               <tbody>
-                ${n.banks.map(r=>`
+                ${n.banks.map(i=>`
                   <tr>
                     <td>
                       <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="color-dot" style="background-color: ${r.color||"var(--primary)"};"></span>
-                        <span>${r.name}</span>
+                        <span class="color-dot" style="background-color: ${i.color||"var(--primary)"};"></span>
+                        <span>${i.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600;">${o(x[r.id])}</td>
+                    <td class="right" style="font-weight: 600;">${o(M[i.id])}</td>
                   </tr>
                 `).join("")}
                 ${n.banks.length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No banks added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Bank Capital</td>
-                  <td class="right">${o(M)}</td>
+                  <td class="right">${o(w)}</td>
                 </tr>
               </tbody>
             </table>
@@ -427,21 +427,21 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
             </div>
             <table>
               <tbody>
-                ${(n.wallets||[]).map(r=>`
+                ${(n.wallets||[]).map(i=>`
                   <tr>
                     <td>
                       <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="color-dot" style="background-color: ${r.color||"var(--success)"};"></span>
-                        <span>${r.name}</span>
+                        <span class="color-dot" style="background-color: ${i.color||"var(--success)"};"></span>
+                        <span>${i.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600;">${o(C[r.id])}</td>
+                    <td class="right" style="font-weight: 600;">${o(O[i.id])}</td>
                   </tr>
                 `).join("")}
                 ${(n.wallets||[]).length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No wallets added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Wallet Capital</td>
-                  <td class="right">${o(O)}</td>
+                  <td class="right">${o(_)}</td>
                 </tr>
               </tbody>
             </table>
@@ -455,23 +455,23 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
             </div>
             <table>
               <tbody>
-                ${(n.cards||[]).map(r=>`
+                ${(n.cards||[]).map(i=>`
                   <tr>
                     <td>
                       <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="color-dot" style="background-color: ${r.color||"var(--danger)"};"></span>
-                        <span>${r.name}</span>
+                        <span class="color-dot" style="background-color: ${i.color||"var(--danger)"};"></span>
+                        <span>${i.name}</span>
                       </div>
                     </td>
-                    <td class="right" style="font-weight: 600; color: ${b[r.id]<0?"var(--danger)":"var(--text)"};">
-                      ${o(b[r.id])}
+                    <td class="right" style="font-weight: 600; color: ${v[i.id]<0?"var(--danger)":"var(--text)"};">
+                      ${o(v[i.id])}
                     </td>
                   </tr>
                 `).join("")}
                 ${(n.cards||[]).length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No credit cards added</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Outstanding</td>
-                  <td class="right" style="color: ${f<0?"var(--danger)":"var(--text)"};">${o(f)}</td>
+                  <td class="right" style="color: ${x<0?"var(--danger)":"var(--text)"};">${o(x)}</td>
                 </tr>
               </tbody>
             </table>
@@ -485,16 +485,16 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
             </div>
             <table>
               <tbody>
-                ${(n.fixedDeposits||[]).filter(r=>r.status==="active").map(r=>`
+                ${P.map(i=>`
                   <tr>
                     <td>
-                      <div style="font-weight: 600;">${this.getBankName(r.bankId)}</div>
-                      <div style="font-size: 0.8rem; color: var(--text-muted);">Matures: ${this.getMaturityDate(r).toISOString().split("T")[0]} (${r.percentage}%)</div>
+                      <div style="font-weight: 600;">${this.getBankName(i.bankId)}</div>
+                      <div style="font-size: 0.8rem; color: var(--text-muted);">Matures: ${this.getMaturityDate(i).toISOString().split("T")[0]} (${i.percentage}%)</div>
                     </td>
-                    <td class="right" style="font-weight: 600; vertical-align: middle;">${o(r.amount)}</td>
+                    <td class="right" style="font-weight: 600; vertical-align: middle;">${o(i.amount)}</td>
                   </tr>
                 `).join("")}
-                ${(n.fixedDeposits||[]).filter(r=>r.status==="active").length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>':""}
+                ${P.length===0?'<tr><td colspan="2" style="color: var(--text-muted); text-align: center;">No active fixed deposits</td></tr>':""}
                 <tr class="asset-total-row">
                   <td>Total Fixed Deposits</td>
                   <td class="right">${o($)}</td>
@@ -507,7 +507,7 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
         <div class="net-assets-summary">
           <div class="summary-line">
             <span>Total Liquid Assets (Banks + Wallets)</span>
-            <strong>${o(M+O)}</strong>
+            <strong>${o(w+_)}</strong>
           </div>
           <div class="summary-line">
             <span>Total Fixed Assets (Fixed Deposits)</span>
@@ -515,12 +515,12 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
           </div>
           <div class="summary-line">
             <span>Total Credit Card Liabilities</span>
-            <strong style="color: var(--danger);">${o(f)}</strong>
+            <strong style="color: var(--danger);">${o(x)}</strong>
           </div>
           <div class="summary-line grand-total">
             <span>Net Asset Balance</span>
-            <span class="${M+O+$+f>=0?"success":"danger"}">
-              ${o(M+O+$+f)}
+            <span class="${w+_+$+x>=0?"success":"danger"}">
+              ${o(w+_+$+x)}
             </span>
           </div>
         </div>
@@ -531,10 +531,10 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
           Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
           Chart.defaults.font.family = "'Segoe UI', system-ui, -apple-system, sans-serif";
 
-          const incomeData = ${JSON.stringify(w)};
+          const incomeData = ${JSON.stringify(c)};
           const expenseData = ${JSON.stringify(s)};
           const monthlyIncome = ${JSON.stringify(e)};
-          const monthlyExpense = ${JSON.stringify(i)};
+          const monthlyExpense = ${JSON.stringify(r)};
 
           const drawChart = (canvasId, dataList) => {
             const canvas = document.getElementById(canvasId);
@@ -631,12 +631,12 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
           });
         <\/script>
       </body>
-      </html>`,this.openHtmlWindow(_,c==="pdf")}}openHtmlWindow(c,a){let n=window.open("","_blank");n?(n.document.write(c),n.document.close(),a&&(n.focus(),setTimeout(()=>{n.print()},250))):alert("Your browser blocked the popup. Please enable popups to generate reports.")}downloadFile(c,a,n){let v=new Blob([c],{type:n}),y=URL.createObjectURL(v),d=document.createElement("a");d.href=y,d.download=a,d.click(),URL.revokeObjectURL(y)}getHtmlTemplate(c){return`<!DOCTYPE html>
+      </html>`,this.openHtmlWindow(y,l==="pdf")}}openHtmlWindow(l,a){let n=window.open("","_blank");n?(n.document.write(l),n.document.close(),a&&(n.focus(),setTimeout(()=>{n.print()},250))):alert("Your browser blocked the popup. Please enable popups to generate reports.")}downloadFile(l,a,n){let m=new Blob([l],{type:n}),C=URL.createObjectURL(m),d=document.createElement("a");d.href=C,d.download=a,d.click(),URL.revokeObjectURL(C)}getHtmlTemplate(l){return`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${c}</title>
+  <title>${l}</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -862,4 +862,4 @@ import{b as z,c as Y,f as U,h as J,l as H,m as V,o as G}from"./chunk-REIR35Z5.js
     }
   </style>
 </head>
-<body>`}getCategoryName(c){let a=this.stateService.state().categories.find(n=>n.id===c);return a?a.name:"Unknown Category"}getCategoryColor(c){let a=this.stateService.state().categories.find(n=>n.id===c);return a&&a.color||"#3b82f6"}getBankName(c){let a=this.stateService.state().banks.find(n=>n.id===c);return a?a.name:"Unknown Bank"}getMaturityDate(c){let a=new Date(c.startDate);return a.setMonth(a.getMonth()+c.months),a}static \u0275fac=function(a){return new(a||E)(B(X))};static \u0275cmp=j({type:E,selectors:[["app-report"]],features:[R([L])],decls:53,vars:6,consts:[[1,"module-container"],[1,"module-header"],[1,"title-area"],[1,"page-title"],[1,"subtitle"],[1,"report-grid"],[1,"report-card","glass-card"],[1,"report-icon"],[1,"report-details"],[1,"report-actions"],[1,"input-group"],["type","month",3,"ngModelChange","ngModel"],[1,"button-group"],[1,"row-group"],["title","Open report in new tab",1,"btn-action",3,"click","disabled"],["title","Download or print as PDF",1,"btn-primary",3,"click","disabled"],["type","number","min","2000","max","2100","step","1",3,"ngModelChange","ngModel"]],template:function(a,n){a&1&&(u(0,"div",0)(1,"header",1)(2,"div",2)(3,"div")(4,"h1",3),h(5,"Reports"),m(),u(6,"p",4),h(7,"Generate detailed financial reports and "),u(8,"span"),h(9,"track your progress"),m()()()()(),u(10,"div",5)(11,"div",6)(12,"div",7),h(13,"\u{1F4CA}"),m(),u(14,"div",8)(15,"h2"),h(16,"Monthly Financial Report"),m(),u(17,"p"),h(18,"A comprehensive report showing income, expenses, and your current asset balances including Banks, Wallets, and Fixed Deposits."),m(),u(19,"div",9)(20,"div",10)(21,"label"),h(22,"Select Month"),m(),u(23,"input",11),D("ngModelChange",function(y){return T(n.selectedMonth,y)||(n.selectedMonth=y),y}),m()(),u(24,"div",12)(25,"div",13)(26,"button",14),N("click",function(){return n.generateReport("view")}),u(27,"span"),h(28,"\u{1F441}\uFE0F"),m(),h(29," View "),m(),u(30,"button",15),N("click",function(){return n.generateReport("pdf")}),h(31," Generate as PDF "),m()()()()()(),u(32,"div",6)(33,"div",7),h(34,"\u{1F4C8}"),m(),u(35,"div",8)(36,"h2"),h(37,"Annual Summary"),m(),u(38,"p"),h(39,"Year-end review of your income and major spending categories for the selected year."),m(),u(40,"div",9)(41,"div",10)(42,"label"),h(43,"Select Year"),m(),u(44,"input",16),D("ngModelChange",function(y){return T(n.selectedYear,y)||(n.selectedYear=y),y}),m()(),u(45,"div",12)(46,"div",13)(47,"button",14),N("click",function(){return n.generateAnnualReport("view")}),u(48,"span"),h(49,"\u{1F441}\uFE0F"),m(),h(50," View "),m(),u(51,"button",15),N("click",function(){return n.generateAnnualReport("pdf")}),h(52," Generate as PDF "),m()()()()()()()()),a&2&&(k(23),A("ngModel",n.selectedMonth),k(3),F("disabled",!n.selectedMonth),k(4),F("disabled",!n.selectedMonth),k(14),A("ngModel",n.selectedYear),k(3),F("disabled",!n.selectedYear),k(4),F("disabled",!n.selectedYear))},dependencies:[W,G,z,J,Y,V,H,U],styles:[".report-grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:2rem;margin-top:2rem}.report-card[_ngcontent-%COMP%]{display:flex;flex-direction:column;padding:2rem;transition:transform .3s ease,box-shadow .3s ease;position:relative;overflow:hidden}.report-card[_ngcontent-%COMP%]:hover:not(.placeholder){transform:translateY(-5px);box-shadow:0 15px 30px -10px #0000004d;border-color:#4facfe66}.report-card.placeholder[_ngcontent-%COMP%]{opacity:.6}.report-card.placeholder[_ngcontent-%COMP%]   .report-icon[_ngcontent-%COMP%]{filter:grayscale(1)}.report-card[_ngcontent-%COMP%]   .report-icon[_ngcontent-%COMP%]{font-size:3rem;margin-bottom:1.5rem;background:#ffffff0d;width:70px;height:70px;display:flex;align-items:center;justify-content:center;border-radius:16px;border:1px solid rgba(255,255,255,.1)}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]{display:flex;flex-direction:column;flex:1}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%]{margin:0 0 .5rem;font-size:1.3rem;color:#fff}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]{color:#94a3b8;font-size:.95rem;line-height:1.6;margin:0 0 2rem;flex:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:1.5rem;background:#0003;padding:1.5rem;border-radius:12px;border:1px solid rgba(255,255,255,.05)}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:.5rem}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%]{font-size:.85rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%], .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]{padding:.75rem 1rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#ffffff0d;color:#fff;font-family:inherit;font-size:1rem;transition:all .2s;width:100%;box-sizing:border-box}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]:focus, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]:focus{outline:none;border-color:#4facfe;background:#ffffff1a}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-inner-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-outer-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-inner-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-outer-spin-button{filter:invert(1);opacity:.5;cursor:pointer}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-inner-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-outer-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-inner-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-outer-spin-button:hover{opacity:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:.75rem;width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .row-group[_ngcontent-%COMP%]{display:flex;gap:.75rem;width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]{flex:1;padding:.75rem;display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.95rem;font-weight:500;font-family:inherit;border-radius:8px;cursor:pointer;transition:all .2s ease;white-space:nowrap}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]   span[_ngcontent-%COMP%]{font-size:1.1rem;line-height:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .full-width[_ngcontent-%COMP%]{width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]{background:linear-gradient(135deg,#4facfe,#00f2fe);border:none;color:#0f172a;font-weight:600}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover{filter:brightness(1.1);box-shadow:0 4px 12px #4facfe4d}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-action[_ngcontent-%COMP%]{background:#ffffff0d;border:1px solid rgba(255,255,255,.1);color:#f8fafc}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-action[_ngcontent-%COMP%]:hover{background:#ffffff1f;border-color:#fff3}"]})};export{q as ReportComponent};
+<body>`}getCategoryName(l){let a=this.stateService.state().categories.find(n=>n.id===l);return a?a.name:"Unknown Category"}getCategoryColor(l){let a=this.stateService.state().categories.find(n=>n.id===l);return a&&a.color||"#3b82f6"}getBankName(l){let a=this.stateService.state().banks.find(n=>n.id===l);return a?a.name:"Unknown Bank"}getMaturityDate(l){let a=new Date(l.startDate);return a.setMonth(a.getMonth()+l.months),a}static \u0275fac=function(a){return new(a||E)(B(X))};static \u0275cmp=j({type:E,selectors:[["app-report"]],features:[R([W])],decls:53,vars:6,consts:[[1,"module-container"],[1,"module-header"],[1,"title-area"],[1,"page-title"],[1,"subtitle"],[1,"report-grid"],[1,"report-card","glass-card"],[1,"report-icon"],[1,"report-details"],[1,"report-actions"],[1,"input-group"],["type","month",3,"ngModelChange","ngModel"],[1,"button-group"],[1,"row-group"],["title","Open report in new tab",1,"btn-action",3,"click","disabled"],["title","Download or print as PDF",1,"btn-primary",3,"click","disabled"],["type","number","min","2000","max","2100","step","1",3,"ngModelChange","ngModel"]],template:function(a,n){a&1&&(h(0,"div",0)(1,"header",1)(2,"div",2)(3,"div")(4,"h1",3),f(5,"Reports"),b(),h(6,"p",4),f(7,"Generate detailed financial reports and "),h(8,"span"),f(9,"track your progress"),b()()()()(),h(10,"div",5)(11,"div",6)(12,"div",7),f(13,"\u{1F4CA}"),b(),h(14,"div",8)(15,"h2"),f(16,"Monthly Financial Report"),b(),h(17,"p"),f(18,"A comprehensive report showing income, expenses, and your current asset balances including Banks, Wallets, and Fixed Deposits."),b(),h(19,"div",9)(20,"div",10)(21,"label"),f(22,"Select Month"),b(),h(23,"input",11),A("ngModelChange",function(C){return D(n.selectedMonth,C)||(n.selectedMonth=C),C}),b()(),h(24,"div",12)(25,"div",13)(26,"button",14),N("click",function(){return n.generateReport("view")}),h(27,"span"),f(28,"\u{1F441}\uFE0F"),b(),f(29," View "),b(),h(30,"button",15),N("click",function(){return n.generateReport("pdf")}),f(31," Generate as PDF "),b()()()()()(),h(32,"div",6)(33,"div",7),f(34,"\u{1F4C8}"),b(),h(35,"div",8)(36,"h2"),f(37,"Annual Summary"),b(),h(38,"p"),f(39,"Year-end review of your income and major spending categories for the selected year."),b(),h(40,"div",9)(41,"div",10)(42,"label"),f(43,"Select Year"),b(),h(44,"input",16),A("ngModelChange",function(C){return D(n.selectedYear,C)||(n.selectedYear=C),C}),b()(),h(45,"div",12)(46,"div",13)(47,"button",14),N("click",function(){return n.generateAnnualReport("view")}),h(48,"span"),f(49,"\u{1F441}\uFE0F"),b(),f(50," View "),b(),h(51,"button",15),N("click",function(){return n.generateAnnualReport("pdf")}),f(52," Generate as PDF "),b()()()()()()()()),a&2&&(S(23),T("ngModel",n.selectedMonth),S(3),F("disabled",!n.selectedMonth),S(4),F("disabled",!n.selectedMonth),S(14),T("ngModel",n.selectedYear),S(3),F("disabled",!n.selectedYear),S(4),F("disabled",!n.selectedYear))},dependencies:[L,G,z,J,Y,V,H,U],styles:[".report-grid[_ngcontent-%COMP%]{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(350px,100%),1fr));gap:2rem;margin-top:2rem}.report-card[_ngcontent-%COMP%]{min-width:0;display:flex;flex-direction:column;padding:2rem;transition:transform .3s ease,box-shadow .3s ease;position:relative;overflow:hidden}.report-card[_ngcontent-%COMP%]:hover:not(.placeholder){transform:translateY(-5px);box-shadow:0 15px 30px -10px #0000004d;border-color:#4facfe66}.report-card.placeholder[_ngcontent-%COMP%]{opacity:.6}.report-card.placeholder[_ngcontent-%COMP%]   .report-icon[_ngcontent-%COMP%]{filter:grayscale(1)}.report-card[_ngcontent-%COMP%]   .report-icon[_ngcontent-%COMP%]{font-size:3rem;margin-bottom:1.5rem;background:#ffffff0d;width:70px;height:70px;display:flex;align-items:center;justify-content:center;border-radius:16px;border:1px solid rgba(255,255,255,.1)}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]{min-width:0;display:flex;flex-direction:column;flex:1}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%]{margin:0 0 .5rem;font-size:1.3rem;color:#fff}.report-card[_ngcontent-%COMP%]   .report-details[_ngcontent-%COMP%]   p[_ngcontent-%COMP%]{color:#94a3b8;font-size:.95rem;line-height:1.6;margin:0 0 2rem;flex:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:1.5rem;background:#0003;padding:1.5rem;border-radius:12px;border:1px solid rgba(255,255,255,.05)}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:.5rem}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%]{font-size:.85rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%], .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]{padding:.75rem 1rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#ffffff0d;color:#fff;font-family:inherit;font-size:1rem;transition:all .2s;width:100%;box-sizing:border-box}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]:focus, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]:focus{outline:none;border-color:#4facfe;background:#ffffff1a}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-inner-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-outer-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-inner-spin-button, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-outer-spin-button{filter:invert(1);opacity:.5;cursor:pointer}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-inner-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=month][_ngcontent-%COMP%]::-webkit-outer-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-calendar-picker-indicator:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-inner-spin-button:hover, .report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[type=number][_ngcontent-%COMP%]::-webkit-outer-spin-button:hover{opacity:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]{display:flex;flex-direction:column;gap:.75rem;width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .row-group[_ngcontent-%COMP%]{display:flex;flex-wrap:wrap;gap:.75rem;width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]{flex:1;padding:.75rem;display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.95rem;font-weight:500;font-family:inherit;border-radius:8px;cursor:pointer;transition:all .2s ease;white-space:nowrap}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]   span[_ngcontent-%COMP%]{font-size:1.1rem;line-height:1}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .full-width[_ngcontent-%COMP%]{width:100%}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]{background:linear-gradient(135deg,#4facfe,#00f2fe);border:none;color:#0f172a;font-weight:600}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover{filter:brightness(1.1);box-shadow:0 4px 12px #4facfe4d}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-action[_ngcontent-%COMP%]{background:#ffffff0d;border:1px solid rgba(255,255,255,.1);color:#f8fafc}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .btn-action[_ngcontent-%COMP%]:hover{background:#ffffff1f;border-color:#fff3}@media(max-width:480px){.report-grid[_ngcontent-%COMP%]{gap:1rem}.report-card[_ngcontent-%COMP%]{padding:1.25rem}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]{padding:1rem}.report-card[_ngcontent-%COMP%]   .report-actions[_ngcontent-%COMP%]   .button-group[_ngcontent-%COMP%]   .row-group[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]{white-space:normal}}"]})};export{q as ReportComponent};
