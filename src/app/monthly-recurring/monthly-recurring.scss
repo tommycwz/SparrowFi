@@ -16,12 +16,13 @@
 
 .recurring-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
 
 .recurring-card {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -48,13 +49,18 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 0.5rem;
+    min-width: 0;
 
     .header-left {
+      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
 
       h3 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         margin: 0;
         font-size: 1.1rem;
         color: white;
@@ -153,6 +159,8 @@
     .progress-labels {
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.35rem;
       font-size: 0.72rem;
       color: rgba(255, 255, 255, 0.4);
 
@@ -213,6 +221,36 @@
         background: rgba(239, 68, 68, 0.15);
         border-color: rgba(239, 68, 68, 0.3);
         color: #ef4444;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .recurring-grid {
+    gap: 1rem;
+  }
+
+  .module-container .data-form .toggle-group {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+
+    .toggle-btn {
+      flex: 1 1 calc(50% - 0.35rem);
+      min-width: 0;
+      line-height: 1.2;
+      white-space: normal;
+    }
+  }
+
+  .recurring-card {
+    padding: 1rem;
+
+    .card-actions {
+      flex-wrap: wrap;
+
+      .btn-primary {
+        flex: 1 1 100% !important;
       }
     }
   }

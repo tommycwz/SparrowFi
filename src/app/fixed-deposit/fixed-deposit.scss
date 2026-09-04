@@ -1,5 +1,5 @@
 .fixed-deposit-container {
-  /* No specific container styles needed as it uses .module-container */
+  min-width: 0;
 }
 
 /* Projection Box styling */
@@ -34,11 +34,12 @@
 /* Deposits Grid */
 .deposits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 1.5rem;
 }
 
 .deposit-card {
+  min-width: 0;
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
@@ -90,8 +91,10 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
 
   .bank-info {
+      min-width: 0;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -108,6 +111,9 @@
     }
 
     .bank-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       font-weight: 600;
       color: #fff;
       font-size: 1rem;
@@ -206,6 +212,53 @@
   button {
     flex: 1;
     justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .deposit-card {
+    padding: 1rem;
+  }
+
+  .deposit-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    .header-right {
+      margin-left: auto;
+    }
+  }
+
+  .deposit-details .detail-item {
+    gap: 1rem;
+
+    .label,
+    .value {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .value {
+      text-align: right;
+    }
+  }
+
+  .deposit-actions {
+    flex-wrap: wrap;
+
+    button {
+      flex: 1 1 140px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .projection-box {
+    padding: 1rem;
+
+    .proj-value {
+      font-size: 1.4rem;
+    }
   }
 }
 

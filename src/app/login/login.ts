@@ -79,7 +79,7 @@ export class LoginComponent {
       const state = await this.fileService.parseSpwFile(file);
       this.stateService.setState(state);
       this.stateService.setLoadedFilename(file.name);
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/transaction']);
     } catch (e: any) {
       this.errorMessage = e.message || 'Failed to load file.';
     }
@@ -102,7 +102,7 @@ export class LoginComponent {
       this.stateService.setLoadedFilename(this.pendingFile!.name);
       this.showPasswordPrompt = false;
       this.pendingFile = null;
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/transaction']);
     } catch (e: any) {
       this.passwordError = e.message || 'Decryption failed.';
     } finally {
@@ -125,6 +125,7 @@ export class LoginComponent {
 
   startNewUser() {
     this.stateService.startNewUser();
-    this.router.navigate(['/dashboard']);
+    console
+    this.router.navigate(['/transaction']);
   }
 }

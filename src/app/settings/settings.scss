@@ -7,6 +7,7 @@
   .content-grid {
     grid-template-columns: 1fr;
     max-width: 800px;
+    min-width: 0;
     margin: 0 auto;
 
     .setting-item {
@@ -22,12 +23,15 @@
       }
 
       .setting-info {
+        min-width: 0;
+
         h3 {
           margin: 0;
           color: white;
           font-size: 1.1rem;
         }
         p {
+          overflow-wrap: anywhere;
           margin: 0.5rem 0 0 0;
           color: rgba(255, 255, 255, 0.6);
           font-size: 0.9rem;
@@ -35,6 +39,8 @@
       }
 
       .setting-control {
+        max-width: 100%;
+
         .currency-select {
           background: rgba(0, 0, 0, 0.2);
           border: 1px solid var(--accent);
@@ -43,6 +49,7 @@
           color: white;
           font-size: 1rem;
           min-width: 200px;
+          max-width: 100%;
           cursor: pointer;
 
           &:focus {
@@ -98,6 +105,8 @@
 
     // Security status bar
     .security-status {
+      min-width: 0;
+      overflow-wrap: anywhere;
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -152,6 +161,19 @@
       transition: color 0.2s;
 
       &:hover { color: #4facfe; }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .module-container {
+    .setting-control,
+    .currency-select {
+      width: 100%;
+    }
+
+    .currency-select {
+      min-width: 0 !important;
     }
   }
 }
@@ -227,6 +249,7 @@
 
       .pw-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 0.75rem;
         justify-content: flex-end;
         margin-top: 0.25rem;
@@ -255,6 +278,10 @@
           transition: all 0.2s;
           &:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 14px -6px #4facfe; }
           &:disabled { opacity: 0.45; cursor: not-allowed; }
+        }
+
+        button {
+          flex: 1 1 140px;
         }
       }
 

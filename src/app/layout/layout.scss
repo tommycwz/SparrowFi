@@ -6,6 +6,7 @@ $transition: 0.3s ease;
 .app-layout {
   display: flex;
   min-height: 100vh;
+  overflow-x: hidden;
   transition: all $transition;
 }
 
@@ -293,6 +294,8 @@ $transition: 0.3s ease;
 // ─── Main content shifts with sidebar ────────────────────────────
 .main-content {
   flex: 1;
+  width: calc(100% - $sidebar-width);
+  min-width: 0;
   margin-left: $sidebar-width;
   min-height: 100vh;
   padding: 2rem;
@@ -300,6 +303,7 @@ $transition: 0.3s ease;
 }
 
 .sidebar-collapsed .main-content {
+  width: calc(100% - $sidebar-collapsed-width);
   margin-left: $sidebar-collapsed-width;
 }
 
@@ -320,9 +324,58 @@ $transition: 0.3s ease;
 
 // ─── Auto-collapse on small screens ──────────────────────────────
 @media (max-width: 900px) {
+  .sidebar {
+    width: $sidebar-collapsed-width;
+    padding: 1.5rem 0.5rem;
+
+    .sidebar-header {
+      justify-content: center;
+      padding: 0;
+
+      .brand {
+        gap: 0;
+      }
+
+      .brand-name,
+      .toggle-btn {
+        display: none;
+      }
+    }
+
+    .sidebar-nav .nav-item,
+    .sidebar-footer button {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+      gap: 0;
+
+      .label,
+      .unsaved-badge {
+        display: none;
+      }
+    }
+  }
+
   .main-content {
+    width: calc(100% - $sidebar-collapsed-width);
     margin-left: $sidebar-collapsed-width;
     padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar,
+  .sidebar.collapsed {
+    width: 60px;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+
+  .main-content,
+  .sidebar-collapsed .main-content {
+    width: calc(100% - 60px);
+    margin-left: 60px;
+    padding: 0.75rem;
   }
 }
 

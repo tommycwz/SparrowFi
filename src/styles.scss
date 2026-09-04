@@ -33,6 +33,7 @@ body {
 /* --- Global Module Layout System --- */
 .module-container {
   max-width: 1200px;
+  min-width: 0;
   margin: 0 auto;
   padding: 2rem;
 
@@ -79,6 +80,7 @@ body {
     grid-template-columns: 1fr;
     gap: 2rem;
     align-items: start;
+    min-width: 0;
 
     @media (min-width: 992px) {
       grid-template-columns: 350px 1fr;
@@ -437,5 +439,20 @@ body {
     padding: 4rem 2rem;
     color: rgba(255, 255, 255, 0.5);
     .icon { font-size: 4rem; margin-bottom: 1rem; opacity: .5; }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .module-header .title-area h1 {
+      font-size: 2.25rem;
+      line-height: 1.1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .module-header .title-area h1 {
+      font-size: 1.85rem;
+    }
   }
 }

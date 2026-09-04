@@ -2,3 +2,70 @@
   --accent: #8b5cf6; // Violet for Category
   --accent-r: 255, 75, 75;
 }
+
+.module-container {
+  min-width: 0;
+
+  .add-section,
+  .list-section {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .data-form > div:last-child {
+    width: 100%;
+    min-width: 0;
+
+    button {
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .data-items .data-item {
+    min-width: 0;
+
+    .data-info {
+      min-width: 0;
+
+      h3 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .module-header .title-area > button {
+      width: 100%;
+    }
+
+    .data-form > div:last-child {
+      flex-wrap: wrap;
+
+      button {
+        min-width: 0;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .add-section,
+    .list-section {
+      padding: 1.25rem;
+    }
+
+    .data-form > div:last-child {
+      flex-direction: column;
+
+      button,
+      button[style] {
+        flex: 1 1 auto !important;
+        width: 100%;
+      }
+    }
+  }
+}

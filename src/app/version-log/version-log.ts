@@ -27,6 +27,9 @@ export class VersionLogComponent {
       tag: 'latest',
       changes: [
         { type: 'improve', text: 'Fix for mobile file reading issues' },
+        { type: 'improve', text: 'Responsive sidebar and main content sizing across desktop, tablet, and phone layouts' },
+        { type: 'improve', text: 'Improved mobile layouts for Dashboard, Transactions, Categories, Fixed Deposits, Monthly Recurring, Reports, and Settings' },
+        { type: 'fix', text: 'Prevented cards, forms, filters, charts, and action buttons from overflowing narrow screens' },
       ]
     }, 
     {
